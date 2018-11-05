@@ -1,0 +1,12 @@
+[submodule "pybettina"]
+	path = pybettina
+	url = https://bitbucket.org/jbathmann/pybettina
+	branch = master
+[submodule "pymeshinteraction"]
+	path = pymeshinteraction
+	url = https://bitbucket.org/jbathmann/pymeshinteraction
+	branch = master
+[submodule "pyogsproject"]
+	path = pyogsproject
+	url = https://bitbucket.org/jbathmann/pyogsproject
+	branch = master
