@@ -52,6 +52,7 @@ class Land:
     def create3DRectangularLand(self, name, ox, oy, oz, lx, ly, lz, partsx, partsy, partsz):
         self.landMesh = MeshInteractor.MeshInteractor(name)
         self.landMesh.create3DRectangularGrid(partsx, ox, lx, partsy, oy, ly, partsz, oz, lz)
+        self.landMesh.fillRectangularGridWithVoxels()
         
         
     def addCIniPIniAndNodeIds(self, c_name, p_name, node_id_name, c_ini, p_ini, node_id):
