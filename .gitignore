@@ -104,3 +104,12 @@ venv.bak/
 .mypy_cache/
 nohup.out
 Avicennia.pyc
+testcases/Auswertung_Goswami
+testcases/Auswertung_VDBP_Test
+testcases/TestCase_HC_HORI_GRADIENT
+testcases/TestCase_SmallBox1Tree
+testcases/TestCase_SteadyState
+testcases/TestCase_VDBP_OutFlowConcentrationRegulated
+testcases/Video_Goswami
+testcases/Video_SmallBox1Tree
+test.vtu
