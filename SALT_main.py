@@ -15,8 +15,98 @@ import MeshInteractor
 import numpy as np
 
 
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Nov 13 14:27:35 2018
 
+@author: bathmann
+"""
+#sys.path.append('../pySALT/FileOperations')
+import Land
+import Flora
+import Bettina
+import pyOgsProject
+import SortFileNames as SFN
+#import SortFilenames as SFn
+#TODO: Check, where the script file is gone. Maybe it is saved on the ssd...
+import numpy as np
+##Dummy files for Jasper to test interaction with OGS:
+class OGSproject:
+    def __init__(self,project_dir, project_name):
+        self.project_dir = project_dir
+        self.project_name = project_name
         
+    def setProjectdir(self, project_dir):
+        self.project_dir = project_dir
+    
+    def setProjectName(self, project_name):
+        self.project_name = project_name
+        
+    def setLandName(self, land_name):
+        self.land_name = land_name
+        
+    def iniParameters(self):
+        self.parameter_names = []
+        self.parameter_types = []
+        self.parameter_values = []
+        
+    def addParameter(self, name, tYpe, value):
+        self.parameter_names.append(name)
+        self.parameter_types.append(tYpe)
+        self.parameter_values.append(value)
+
+    def initializeProject(self):
+        self.project = pyOgsProject.GenerateProject(self.project_dir+self.project_name + ".prj")
+        self.project.setMesh(self.land_name+".vtu")
+        self.project.setStandardProcessInformation()
+        self.project.setStandartTimeLoop()
+        self.project.setStandartParameters()
+        self.project.setStandardDensityModel()
+        self.project.setStandardNonlinearSolvers()
+        self.project.resetInitialConditions("p_ini","c_ini")
+        self.project.processspeci_bo_force = "0 0 -"+str(self.g)
+        self.project.resetBoundaryConditions()
+working_directory = "/home/bathmann/Dokumente/UFZ/code/pySALT/testcases/TestCase_SteadyState/"
+prefix = "Output_HC_Testcase-SteadyState_pcs"
+postfix = ".vtu"
+sFN = SFN.ReadAndSortFileNames(working_directory, prefix, postfix)
+all_files_sorted = sFN.getSortedFiles()
+files_t = sFN.getFilesInTimeIntervall(100000, 800000, all_files_sorted)
+print(files_t)
+
+"""
+working_directory = "/home/bathmann/Dokumente/UFZ/code/pySALT/testcases/TestCase_SteadyState/"
+files_t = ["Output_HC_Testcase-SteadyState_pcs_0_ts_8900_t_8900000.000000.vtu",
+           "Output_HC_Testcase-SteadyState_pcs_0_ts_9000_t_9000000.000000.vtu",
+           "Output_HC_Testcase-SteadyState_pcs_0_ts_9100_t_9100000.000000.vtu",
+           "Output_HC_Testcase-SteadyState_pcs_0_ts_9200_t_9200000.000000.vtu"]
+
+
+working_directory = "./"
+land = Land.Land("testland", working_directory)
+land.create3DRectangularLand("testlandmesh", 0, 0, -1, 10, 10, 1, 11, 11, 3)
+n = land.initial_mesh.grid.GetNumberOfPoints()
+c,p , iD = [], [], []
+for i in range(n):
+    point = land.initial_mesh.grid.GetPoints().GetPoint(i)
+    c.append(point[0])
+    p.append(point[1])
+    iD.append(i)
+land.setCIniPIniAndNodeIds(["c_ini", "p_ini"], "bulk_node_ids", [np.array(c), np.array(p)], np.array(iD))
+land.setCurrentPropertyNames(["concentration","pressure"])
+land.outputLand()
+
+flora = Flora.Flora("testflora", "testconstants", land, "./")
+flora.randomlyPlantTreesInRectangularDomain([1],["Avicennia"],land.bounding_box)
+
+bettina = Bettina.Bettina("Testbettina", land, flora)
+
+bettina.setConstantSubsurfaceProperties([0,1000,2000],[c,p])
+#bettina.setVariableSubsurfaceProperties(files_t, working_directory)
+bettina.evolveSystem()
+"""
+"""
 timerepeats = [50,  595,  1140,3600]#,440,8500,1]
 timedeltaTs = [1e-2,1e-1,1e-0,1e0]#,1e-1,1e-1,1]
 
@@ -72,4 +162,4 @@ for i in range(n):
     p.append(point[1])
     iD.append(33)
 land.addCIniPIniAndNodeIds("c_ini", "p_ini", "bulk_node_ids", np.array(c), np.array(p), np.array(iD))
-land.outputLand("./")
+land.outputLand("./")"""
