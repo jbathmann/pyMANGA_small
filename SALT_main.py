@@ -33,10 +33,14 @@ import OGSProject
 import numpy as np
 ##Dummy files for Jasper to test interaction with OGS:
 class SaltSetup:
-    def __init__(self, name, working_directory):
+    def __init__(self, name, working_directory, land, flora):
         self.setup_name = name
         self.working_directory = working_directory
         self.boundary_surfaces = []
+        self.land = land
+        self.flora = flora
+        self.createOGSProject()
+        self.initializeBettina()
         
     def setLand(self, land):
         self.land = land
@@ -44,13 +48,14 @@ class SaltSetup:
     def setFlora(self, flora):
         self.flora = flora
     
-    def initializeBettina(self, name):
-        self.bettina = Bettina.Bettina(name, self.land, self.flora)
+    def initializeBettina(self):
+        self.bettina = Bettina.Bettina(self.setup_name+"Bettina", self.land, self.flora)
         
     def createOGSProject(self):
         self.ogsPrj = OGSProject.OGSProject(self.working_directory, self.setup_name + "_OGSproject")
-        self.ogsPrj.setLandName(self.land.name)
+        self.ogsPrj.setLandName(self.land.initial_mesh_name)
         self.ogsPrj.initializeProject()
+        self.ogsPrj.project.output_prefix = self.setup_name + "_Output"
         
     def setInitialConditionNames(self, p_ini, c_ini):
         self.c_ini_name = c_ini
@@ -110,7 +115,7 @@ class SaltSetup:
         boundary.CreateMeshFromPoints([points, ids])
         boundary.grid.SetCells(5,cells)
         full_c_ini = land_grid.GetPointData().GetArray(self.c_ini_name)
-        full_p_ini = land_grid.GetPointData().GetArray(self.c_ini_name)
+        full_p_ini = land_grid.GetPointData().GetArray(self.p_ini_name)
         boundary_c_ini, boundary_p_ini = np.zeros(len(ids)), np.zeros(len(ids)) 
         for i in range(len(ids)):
             iD = ids[i]
@@ -124,120 +129,80 @@ class SaltSetup:
     def setTimeSteppingAndOutputLoopsForOgs(self,timerepeats, timedeltaTs, outputrepeats, outputdeltaN):
         self.ogsPrj.setTimeSteppingAndOutputLoops(timerepeats, timedeltaTs, outputrepeats, outputdeltaN)
 
+    def updateFloraBoundaryConditions(self):
+        self.root_surfaces = flora.getAllRootNames()
+        args = "NonuniformVariableDependentNeumann", "constant", "coeff1", "coeff2", "coeff3"
+        self.ogsPrj.createTreeBoundaryConditionsFromList(self.root_surfaces, "pressure", *args)
     
+    def updateBoundaryConditions(self):
+        self.ogsPrj.resetBoundaryConditions()
+        self.addBoundaryConditionForSurfaces("pressure", "NonuniformDirichlet")
+        self.addBoundaryConditionForSurfaces("concentration", "NonuniformDirichlet")
+        self.updateFloraBoundaryConditions()
+        
+    def runOGS(self):
+        self.ogsPrj.runOgs()
+        
+    def setOgsTiniTend(self, t_ini, t_end):
+        self.ogsPrj.setTiniTend(t_ini, t_end)
+        
+    def progressBettina(self, files_t):
+        self.bettina.setVariableSubsurfaceProperties(files_t, self.working_directory)
+        self.bettina.evolveSystem()
+        
+    def updateModel(self):
+        self.ogsPrj.setLandName(self.land.initial_mesh_name)
+        self.ogsPrj.initializeProject()
+        self.ogsPrj.project.output_prefix = self.setup_name + "_Output"
 working_directory = "./testruns/"
-prefix = "Output_HC_Testcase-SteadyState_pcs"
+setup_name ="testrun"
+prefix = setup_name + "_Output_pcs"
 postfix = ".vtu"
 land = Land.Land("testlandmesh", working_directory)
-land.create3DRectangularLand("testlandmesh", 0, 0, -1, 10, 10, 1, 11, 11, 3)
+land.create3DRectangularLand("testlandmesh", 0, 0, -1, 100, 100, 1, 101, 101, 3)
 n = land.initial_mesh.grid.GetNumberOfPoints()
 c,p , iD = [], [], []
 for i in range(n):
     point = land.initial_mesh.grid.GetPoints().GetPoint(i)
-    c.append(35)
-    p.append(-1000*9.81*(point[2]-1e-2*point[0]))
+    c.append(.035)
+    p.append(-(1000+35*.7)*9.81*(point[2]-1e-2*point[0]))
     iD.append(i)
 land.setCIniPIniAndNodeIds(["c_ini", "p_ini"], "bulk_node_ids", [np.array(c), np.array(p)], np.array(iD))
 land.outputLand()
-  
-model = SaltSetup("testrun", working_directory)
-model.setLand(land)
-model.createOGSProject()
+
+flora = Flora.Flora("testflora", "testconstants", land, working_directory)
+flora.randomlyPlantTreesInRectangularDomain([10],["Avicennia"],land.bounding_box)
+
+model = SaltSetup(setup_name, working_directory, land, flora)
 model.setVariableNames("pressure","concentration")
 model.setInitialConditionName("p_ini", "c_ini")
 model.createBoundarySurface("left")
 model.createBoundarySurface("right")
-model.addBoundaryConditionForSurfaces("pressure", "NonuniformDirichlet")
-model.addBoundaryConditionForSurfaces("concentration", "NonuniformDirichlet")
-
-timerepeats = [50,  595,  1140,3600]#,440,8500,1]
-timedeltaTs = [1e-2,1e-1,1e-0,1e0]#,1e-1,1e-1,1]
-
-outputrepeats = [1, 1,6]#,500,1]
-outputdeltaN = [1185,600,600]#,5000,1]
-
-model.setTimeSteppingAndOutputLoopsForOgs(timerepeats, timedeltaTs, outputrepeats, outputdeltaN)
+model.updateBoundaryConditions()
 
 
-
-
-model.writeOgsProject()
-
-"""
-n = land.initial_mesh.grid.GetNumberOfPoints()
-c,p , iD = [], [], []
-for i in range(n):
-    point = land.initial_mesh.grid.GetPoints().GetPoint(i)
-    c.append(point[0])
-    p.append(point[1])
-    iD.append(i)
-land.setCIniPIniAndNodeIds(["c_ini", "p_ini"], "bulk_node_ids", [np.array(c), np.array(p)], np.array(iD))
-land.setCurrentPropertyNames(["concentration","pressure"])
-land.outputLand()
-
-flora = Flora.Flora("testflora", "testconstants", land, "./")
-flora.randomlyPlantTreesInRectangularDomain([1],["Avicennia"],land.bounding_box)
-
-bettina = Bettina.Bettina("Testbettina", land, flora)
-
-bettina.setConstantSubsurfaceProperties([0,1000,2000],[c,p])
-#bettina.setVariableSubsurfaceProperties(files_t, working_directory)
-bettina.evolveSystem()
-"""
-"""
-timerepeats = [50,  595,  1140,3600]#,440,8500,1]
-timedeltaTs = [1e-2,1e-1,1e-0,1e0]#,1e-1,1e-1,1]
-
-outputrepeats = [1, 1,6]#,500,1]
-outputdeltaN = [1185,600,600]#,5000,1]
-
-projectdir = "./TestCase_VDBP_OutFlowConcentrationRegulated/"#directory, where output is stored
-landName = "goswami_input"#name of subsurface mesh
-prefix = "Goswami_Component_Transport" #prefix for ogs output storage
-iterations = 1 #number of iterations
-delta_t = 1e2#data storage frequency
-t_ini = 0 #initial time
-t_end = 4800#first flora update time
-l=.53 #defines reference length in meters
-parts=27#53 #defines grid spacing
-
-factor = 2
-geometricalRatio=[1,.05,0.49056603773584906]#defines ratio between (xlen,ylen,zlen)
-horizontal_gradient = -1e-1 # defines horizontal landscape slope
-vertical_gradient = 0 # useless
-g= 9.81 # gravitational acceleration
-n_avi = 1 #number of avicennias planted
-n_rhi = 0 #number of rhi planted
-random = False # bool for type of concentration distribution
-linear = False
-meanc = .035 #mean component concentration
-target_c = .05
-useOgs = True #bool for interaction with OGS
-conc_difference_ratio = 0.701
-class Land:
-    def __init__(self,land_name):
-        self.name = land_name
-    def create3DRectangularLand(self, name, ox, oy, oz, lx, ly, lz, partsx, partsy, partsz):
-        self.landMesh = MeshInteractor.MeshInteractor(name)
-        self.landMesh.create3DRectangularGrid(partsx, ox, lx, partsy, oy, ly, partsz, oz, lz)
-        self.landMesh.fillRectangularGridWithVoxels()
-        
-        
-    def addCIniPIniAndNodeIds(self, c_name, p_name, node_id_name, c_ini, p_ini, node_id):
-        self.landMesh.AddPropertyVector(p_ini,p_name,"double")
-        self.landMesh.AddPropertyVector(c_ini,c_name,"double")
-        self.landMesh.AddPropertyVector(node_id,node_id_name,"unsigned_long")
-
-    def outputLand(self, location):
-        self.landMesh.OutputMesh(location)
-land = Land("testland")
-land.create3DRectangularLand("test", 0, 0, 0, 10, 10, 10, 11, 11, 11)
-c,p,iD = [],[],[]
-n = land.landMesh.pd.GetNumberOfPoints()
-for i in range(n):
-    point = land.landMesh.pd.GetPoints().GetPoint(i)
-    c.append(point[0])
-    p.append(point[1])
-    iD.append(33)
-land.addCIniPIniAndNodeIds("c_ini", "p_ini", "bulk_node_ids", np.array(c), np.array(p), np.array(iD))
-land.outputLand("./")"""
+file_reader = SFN.ReadAndSortFileNames(working_directory, prefix, postfix)
+#1/2 Jahr = 15778800.0 Sekunden
+file_reader.createPvDFile( "land_meshes.pvd")
+dt = 15778800.0
+for i in range(3):
+    model.updateBoundaryConditions()
+    t_ini = i * dt
+    t_end = (i + 1) * dt
+    #1 Tag = [100, 50, 59, 23 mit [1e-1, 1e0, 60, 3600, ]
+    timerepeats = [100, 50, 59, 23, 29*24, 30*24*5]
+    timedeltaTs = [1e-1, 1e0, 60, 3600, 3600, 3600]
+    outputrepeats = [1, 29, 30*5]
+    outputdeltaN = [232, 24, 24]
+    model.setOgsTiniTend(t_ini, t_end)
+    model.setTimeSteppingAndOutputLoopsForOgs(timerepeats, timedeltaTs, outputrepeats, outputdeltaN)
+    
+    model.writeOgsProject()
+    model.runOGS()
+    t_files = file_reader.getFilesInTimeIntervall(t_ini, t_end)[1:]
+    print(t_files)
+    file_reader.addLandMeshesToPvdFile(t_files)
+    model.progressBettina(t_files)
+    model.updateModel()
+file_reader.finishPvDFile()
+    

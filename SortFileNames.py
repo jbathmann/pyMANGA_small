@@ -29,10 +29,34 @@ class ReadAndSortFileNames:
         sorted_relevant_files = sorted(relevant_files, key=self.numericalSort)
         return sorted_relevant_files
     
-    def getFilesInTimeIntervall(self, t_begin, t_end, files):
+    def getFilesInTimeIntervall(self, t_begin, t_end):
         relevant_files = []
+        files = self.getSortedFiles()
         for file in files:
             time = float(file.strip(self.postfix).split("_t_")[-1])
             if t_begin <= time <= t_end:
                 relevant_files.append(file)
         return relevant_files
+
+    def createPvDFile(self, pvd_file_name):
+        self.pvd_file_name = self.working_directory + pvd_file_name
+        file = open(self.pvd_file_name, "w")
+        print("jo")
+        file.write("""<?xml version="1.0"?>
+<VTKFile type="Collection" version="0.1" byte_order="LittleEndian" compressor="vtkZLibDataCompressor">
+  <Collection>
+                   """)
+        file.close()
+        
+    def addLandMeshesToPvdFile(self, meshes):
+        file = open(self.pvd_file_name, "a")
+        for mesh in meshes[:-1]:
+            t = float(mesh.strip(".vtu").split("_t_")[-1])
+            file.write('        <DataSet timestep="' + str(t) + '" group="" part="0" file="'+ mesh + '"/>\n')
+        file.close()
+        
+    def finishPvDFile(self):
+        file = open(self.pvd_file_name, "a")
+        file.write("""  </Collection>
+</VTKFile>""")
+        file.close()
