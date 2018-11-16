@@ -154,6 +154,25 @@ class SaltSetup:
         self.ogsPrj.setLandName(self.land.initial_mesh_name)
         self.ogsPrj.initializeProject()
         self.ogsPrj.project.output_prefix = self.setup_name + "_Output"
+
+    def createMeshCollection(self, prefix, postfix):
+        self.file_reader_meshes = SFN.ReadAndSortFileNames(self.working_directory, prefix, postfix)
+        self.file_reader_meshes.createPvDFile( "land_meshes.pvd")
+
+    def readAndPassTMeshFileNames(self,t_ini, t_end):
+        t_files = self.file_reader_meshes.getFilesInTimeIntervall(t_ini, t_end)
+        self.file_reader_meshes.addLandMeshesToPvdFile(t_files[1:])
+        self.progressBettina(t_files)
+    
+    def setAndRunOgs(self, t_ini, t_end, timerepeats,timedeltaTs,
+                     outputrepeats, outputdeltaN):
+        self.setOgsTiniTend(t_ini, t_end)
+        self.setTimeSteppingAndOutputLoopsForOgs(timerepeats, timedeltaTs, outputrepeats, outputdeltaN)
+    
+        self.writeOgsProject()
+        self.runOGS()
+        
+        
 working_directory = "./testruns/"
 setup_name ="testrun"
 prefix = setup_name + "_Output_pcs"
@@ -171,7 +190,7 @@ land.setCIniPIniAndNodeIds(["c_ini", "p_ini"], "bulk_node_ids", [np.array(c), np
 land.outputLand()
 
 flora = Flora.Flora("testflora", "testconstants", land, working_directory)
-flora.randomlyPlantTreesInRectangularDomain([10],["Avicennia"],land.bounding_box)
+flora.randomlyPlantTreesInRectangularDomain([23],["Avicennia"],land.bounding_box)
 
 model = SaltSetup(setup_name, working_directory, land, flora)
 model.setVariableNames("pressure","concentration")
@@ -180,29 +199,25 @@ model.createBoundarySurface("left")
 model.createBoundarySurface("right")
 model.updateBoundaryConditions()
 
-
-file_reader = SFN.ReadAndSortFileNames(working_directory, prefix, postfix)
-#1/2 Jahr = 15778800.0 Sekunden
-file_reader.createPvDFile( "land_meshes.pvd")
-dt = 15778800.0
-for i in range(3):
+model.createMeshCollection(prefix, postfix)
+file_reader_trees = SFN.ReadAndSortFileNames(working_directory, "0Avicennia", ".vtu")
+print(file_reader_trees.getSortedFiles())
+#1/2 Jahr = 15778800.0 Sekunde34n
+file_reader_trees.createPvDFile( "tree_meshes.pvd")
+dt = 15778800.0/6.
+for i in range(12):
+    print("Simulating Month ", (i+1))
     model.updateBoundaryConditions()
     t_ini = i * dt
     t_end = (i + 1) * dt
     #1 Tag = [100, 50, 59, 23 mit [1e-1, 1e0, 60, 3600, ]
-    timerepeats = [100, 50, 59, 23, 29*24, 30*24*5]
+    timerepeats = [100, 50, 59, 23, 29*24, 30*5*24]
     timedeltaTs = [1e-1, 1e0, 60, 3600, 3600, 3600]
     outputrepeats = [1, 29, 30*5]
     outputdeltaN = [232, 24, 24]
-    model.setOgsTiniTend(t_ini, t_end)
-    model.setTimeSteppingAndOutputLoopsForOgs(timerepeats, timedeltaTs, outputrepeats, outputdeltaN)
-    
-    model.writeOgsProject()
-    model.runOGS()
-    t_files = file_reader.getFilesInTimeIntervall(t_ini, t_end)[1:]
-    print(t_files)
-    file_reader.addLandMeshesToPvdFile(t_files)
-    model.progressBettina(t_files)
+    model.setAndRunOgs(t_ini, t_end, timerepeats, timedeltaTs, outputrepeats,
+                       outputdeltaN)
+    model.readAndPassTMeshFileNames(t_ini, t_end)
+    t_trees = file_reader_trees.getFilesInTimeIntervall(t_ini, t_end)
+    file_reader_trees.addLandMeshesToPvdFile(t_trees)
     model.updateModel()
-file_reader.finishPvDFile()
-    

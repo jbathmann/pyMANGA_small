@@ -41,18 +41,27 @@ class ReadAndSortFileNames:
     def createPvDFile(self, pvd_file_name):
         self.pvd_file_name = self.working_directory + pvd_file_name
         file = open(self.pvd_file_name, "w")
-        print("jo")
         file.write("""<?xml version="1.0"?>
 <VTKFile type="Collection" version="0.1" byte_order="LittleEndian" compressor="vtkZLibDataCompressor">
   <Collection>
-                   """)
+                   \n""")
         file.close()
         
     def addLandMeshesToPvdFile(self, meshes):
-        file = open(self.pvd_file_name, "a")
+        tempfile = open(self.pvd_file_name, "r")
+        lines = tempfile.readlines()
+        if(len(lines)>4):
+            lines = lines[:-2]
+        tempfile.close()
+        file = open(self.pvd_file_name, "w")
+
+        for line in lines:
+            file.write(line)
         for mesh in meshes[:-1]:
             t = float(mesh.strip(".vtu").split("_t_")[-1])
             file.write('        <DataSet timestep="' + str(t) + '" group="" part="0" file="'+ mesh + '"/>\n')
+        file.write("""  </Collection>
+</VTKFile>""")
         file.close()
         
     def finishPvDFile(self):
