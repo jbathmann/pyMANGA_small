@@ -113,3 +113,4 @@ testcases/TestCase_VDBP_OutFlowConcentrationRegulated
 testcases/Video_Goswami
 testcases/Video_SmallBox1Tree
 *.vtu
+testruns/

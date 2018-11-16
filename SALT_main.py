@@ -7,10 +7,8 @@ Created on Thu Aug  2 15:35:00 2018
 
 """
 import sys
-sys.path.insert(0, './pyogsproject')
-sys.path.insert(0, './pybettina')
-
-sys.path.insert(0, './pymeshinteraction')
+sys.path.append('./pymeshinteraction/')
+import MeshPointFinder as MPF
 import MeshInteractor
 import numpy as np
 
@@ -22,70 +20,150 @@ Created on Tue Nov 13 14:27:35 2018
 
 @author: bathmann
 """
-#sys.path.append('../pySALT/FileOperations')
+sys.path.append('./pybettina/')
 import Land
 import Flora
 import Bettina
-import pyOgsProject
 import SortFileNames as SFN
+sys.path.append('./pyogsproject/')
+
+import OGSProject
 #import SortFilenames as SFn
 #TODO: Check, where the script file is gone. Maybe it is saved on the ssd...
 import numpy as np
 ##Dummy files for Jasper to test interaction with OGS:
-class OGSproject:
-    def __init__(self,project_dir, project_name):
-        self.project_dir = project_dir
-        self.project_name = project_name
+class SaltSetup:
+    def __init__(self, name, working_directory):
+        self.setup_name = name
+        self.working_directory = working_directory
+        self.boundary_surfaces = []
         
-    def setProjectdir(self, project_dir):
-        self.project_dir = project_dir
+    def setLand(self, land):
+        self.land = land
     
-    def setProjectName(self, project_name):
-        self.project_name = project_name
+    def setFlora(self, flora):
+        self.flora = flora
+    
+    def initializeBettina(self, name):
+        self.bettina = Bettina.Bettina(name, self.land, self.flora)
         
-    def setLandName(self, land_name):
-        self.land_name = land_name
+    def createOGSProject(self):
+        self.ogsPrj = OGSProject.OGSProject(self.working_directory, self.setup_name + "_OGSproject")
+        self.ogsPrj.setLandName(self.land.name)
+        self.ogsPrj.initializeProject()
         
-    def iniParameters(self):
-        self.parameter_names = []
-        self.parameter_types = []
-        self.parameter_values = []
+    def setInitialConditionNames(self, p_ini, c_ini):
+        self.c_ini_name = c_ini
+        self.p_ini_name = p_ini
+        self.ogsPrj.setInitialConditionName(p_ini, c_ini)
         
-    def addParameter(self, name, tYpe, value):
-        self.parameter_names.append(name)
-        self.parameter_types.append(tYpe)
-        self.parameter_values.append(value)
+    def setVariableNames(self, p_var, c_var):
+        self.c_var_name = c_var
+        self.p_var_name = p_var
+        self.ogsPrj.setVariableNames(p_var, c_var)
+        self.land.setCurrentPropertyNames([c_var,p_var])
+        
+    def setInitialConditionName(self, p_ini, c_ini):
+        self.c_ini_name = c_ini
+        self.p_ini_name = p_ini
+        self.ogsPrj.setInitialConditionName(p_ini, c_ini)
+        
+    def addBoundaryConditionForSurfaces(self, variable, *args):
+        self.ogsPrj.createBoundaryConditionsFromList(self.boundary_surfaces, variable, *args)
+        
+    def writeOgsProject(self):
+        self.ogsPrj.writeProject()
 
-    def initializeProject(self):
-        self.project = pyOgsProject.GenerateProject(self.project_dir+self.project_name + ".prj")
-        self.project.setMesh(self.land_name+".vtu")
-        self.project.setStandardProcessInformation()
-        self.project.setStandartTimeLoop()
-        self.project.setStandartParameters()
-        self.project.setStandardDensityModel()
-        self.project.setStandardNonlinearSolvers()
-        self.project.resetInitialConditions("p_ini","c_ini")
-        self.project.processspeci_bo_force = "0 0 -"+str(self.g)
-        self.project.resetBoundaryConditions()
-working_directory = "/home/bathmann/Dokumente/UFZ/code/pySALT/testcases/TestCase_SteadyState/"
+    def createBoundarySurface(self, location):
+        land_mesh = self.land.initial_mesh
+        land_grid = land_mesh.grid
+        origin = [land_mesh.ox, land_mesh.oy, land_mesh.oz]
+        deltas = [land_mesh.dx, land_mesh.dy, land_mesh.dz]
+        steps = [land_mesh.extension_points_X, land_mesh.extension_points_Y, land_mesh.extension_points_Z]
+        shift = 0
+        if location == "left" or location == "right":
+            steps[0] = 1
+            shift = 1
+        if location == "right":
+            origin[0] = origin[0] + land_mesh.lengthX
+        if location == "front" or location == "back":
+            steps[1] = 1
+            shift = 2
+        if location == "back":
+            origin[1] = origin[1] + land_mesh.lengthY
+        if location == "bottom" or location == "top": steps[2] = 1
+        if location == "top":
+            origin[2] = origin[2] + land_mesh.lengthZ
+        boundary_mesh_name = land_mesh.meshName + "_" + location + "Boundary"
+        boundary_creator = MPF.MeshPointFinder(land_grid)
+        points, ids = boundary_creator.findPointsOnPlane(steps[0], steps[1], steps[2], deltas[0], deltas[1], deltas[2], origin[0], origin[1], origin[2]) 
+        temppoints = []
+        for i in range(len(points)):
+            point = points[i]
+            point = point[(0+shift)%3], point[(1+shift)%3], point[(2+shift)%3]
+            temppoints.append(point)
+        temp_boundary = MeshInteractor.MeshInteractor(boundary_mesh_name)
+        temp_boundary.CreateMeshFromPoints([temppoints, ids])
+        temp_boundary.CreateMultipleTriangles()
+        cells = temp_boundary.grid.GetCells()
+        boundary = MeshInteractor.MeshInteractor(boundary_mesh_name)
+        boundary.CreateMeshFromPoints([points, ids])
+        boundary.grid.SetCells(5,cells)
+        full_c_ini = land_grid.GetPointData().GetArray(self.c_ini_name)
+        full_p_ini = land_grid.GetPointData().GetArray(self.c_ini_name)
+        boundary_c_ini, boundary_p_ini = np.zeros(len(ids)), np.zeros(len(ids)) 
+        for i in range(len(ids)):
+            iD = ids[i]
+            boundary_c_ini[i]=full_c_ini .GetTuple(iD)[0]
+            boundary_p_ini[i]=(full_p_ini .GetTuple(iD)[0])
+        boundary.AddPropertyVector(np.array(boundary_c_ini),self.c_ini_name, "double")
+        boundary.AddPropertyVector(np.array(boundary_p_ini),self.p_ini_name, "double")
+        boundary.OutputMesh(self.working_directory)
+        self.boundary_surfaces.append(boundary_mesh_name)
+        
+    def setTimeSteppingAndOutputLoopsForOgs(self,timerepeats, timedeltaTs, outputrepeats, outputdeltaN):
+        self.ogsPrj.setTimeSteppingAndOutputLoops(timerepeats, timedeltaTs, outputrepeats, outputdeltaN)
+
+    
+working_directory = "./testruns/"
 prefix = "Output_HC_Testcase-SteadyState_pcs"
 postfix = ".vtu"
-sFN = SFN.ReadAndSortFileNames(working_directory, prefix, postfix)
-all_files_sorted = sFN.getSortedFiles()
-files_t = sFN.getFilesInTimeIntervall(100000, 800000, all_files_sorted)
-print(files_t)
+land = Land.Land("testlandmesh", working_directory)
+land.create3DRectangularLand("testlandmesh", 0, 0, -1, 10, 10, 1, 11, 11, 3)
+n = land.initial_mesh.grid.GetNumberOfPoints()
+c,p , iD = [], [], []
+for i in range(n):
+    point = land.initial_mesh.grid.GetPoints().GetPoint(i)
+    c.append(35)
+    p.append(-1000*9.81*(point[2]-1e-2*point[0]))
+    iD.append(i)
+land.setCIniPIniAndNodeIds(["c_ini", "p_ini"], "bulk_node_ids", [np.array(c), np.array(p)], np.array(iD))
+land.outputLand()
+  
+model = SaltSetup("testrun", working_directory)
+model.setLand(land)
+model.createOGSProject()
+model.setVariableNames("pressure","concentration")
+model.setInitialConditionName("p_ini", "c_ini")
+model.createBoundarySurface("left")
+model.createBoundarySurface("right")
+model.addBoundaryConditionForSurfaces("pressure", "NonuniformDirichlet")
+model.addBoundaryConditionForSurfaces("concentration", "NonuniformDirichlet")
+
+timerepeats = [50,  595,  1140,3600]#,440,8500,1]
+timedeltaTs = [1e-2,1e-1,1e-0,1e0]#,1e-1,1e-1,1]
+
+outputrepeats = [1, 1,6]#,500,1]
+outputdeltaN = [1185,600,600]#,5000,1]
+
+model.setTimeSteppingAndOutputLoopsForOgs(timerepeats, timedeltaTs, outputrepeats, outputdeltaN)
+
+
+
+
+model.writeOgsProject()
 
 """
-working_directory = "/home/bathmann/Dokumente/UFZ/code/pySALT/testcases/TestCase_SteadyState/"
-files_t = ["Output_HC_Testcase-SteadyState_pcs_0_ts_8900_t_8900000.000000.vtu",
-           "Output_HC_Testcase-SteadyState_pcs_0_ts_9000_t_9000000.000000.vtu",
-           "Output_HC_Testcase-SteadyState_pcs_0_ts_9100_t_9100000.000000.vtu",
-           "Output_HC_Testcase-SteadyState_pcs_0_ts_9200_t_9200000.000000.vtu"]
-
-
-working_directory = "./"
-land = Land.Land("testland", working_directory)
-land.create3DRectangularLand("testlandmesh", 0, 0, -1, 10, 10, 1, 11, 11, 3)
 n = land.initial_mesh.grid.GetNumberOfPoints()
 c,p , iD = [], [], []
 for i in range(n):
