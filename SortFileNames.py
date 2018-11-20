@@ -47,7 +47,7 @@ class ReadAndSortFileNames:
                    \n""")
         file.close()
         
-    def addLandMeshesToPvdFile(self, meshes):
+    def addMeshesToPvdFile(self, meshes):
         tempfile = open(self.pvd_file_name, "r")
         lines = tempfile.readlines()
         if(len(lines)>4):
