@@ -16,19 +16,20 @@ setup_name ="testrun"
 prefix = setup_name + "_Output_pcs"
 postfix = ".vtu"
 land = Land.Land("testlandmesh", working_directory)
-land.create3DRectangularLand("testlandmesh", 0, 0, -1, 50, 50, 1, 51, 51, 3)
+land.create3DRectangularLand("testlandmesh", 0, 0, -1, 10, 10, 1, 61, 61, 3)
 n = land.initial_mesh.grid.GetNumberOfPoints()
 c,p , iD = [], [], []
 for i in range(n):
     point = land.initial_mesh.grid.GetPoints().GetPoint(i)
     c.append(.035)
-    p.append(-(1000+35*.7)*9.81*(point[2]-1e-2*point[0]))
+    p.append(-(1000+35*.7)*9.81*(point[2]+1e-2*point[0]))
     iD.append(i)
 land.setCIniPIniAndNodeIds(["c_ini", "p_ini"], "bulk_node_ids", [np.array(c), np.array(p)], np.array(iD))
 land.outputLand()
 
 flora = Flora.Flora("testflora", "testconstants", land, working_directory)
 flora.randomlyPlantTreesInRectangularDomain([10],["Avicennia"],land.bounding_box)
+
 
 model = SALT.SaltSetup(setup_name, working_directory, land, flora)
 model.setVariableNames("pressure","concentration")
@@ -40,7 +41,7 @@ model.createMeshCollection(prefix, postfix)
 model.createTreeCollection( "Avicennia", ".vtu")
 
 #1/2 Jahr = 15778800.0 Sekunde34n
-dt = 15778800.0/(6.*1000)
+dt = 15778800.0/(6.)
 for i in range(12):
 
     print("Simulating Month ", (i+1))
@@ -57,3 +58,4 @@ for i in range(12):
     model.readAndPassTMeshFileNames(t_ini, t_end)
     
     model.updateModel()
+    

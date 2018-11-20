@@ -125,7 +125,7 @@ class SaltSetup:
         self.ogsPrj.setTimeSteppingAndOutputLoops(timerepeats, timedeltaTs, outputrepeats, outputdeltaN)
 
     def updateFloraBoundaryConditions(self):
-        self.root_surfaces = flora.getAllRootNames()
+        self.root_surfaces = self.flora.getAllRootNames()
         args = "NonuniformVariableDependentNeumann", "constant", "coeff1", "coeff2", "coeff3"
         self.ogsPrj.createTreeBoundaryConditionsFromList(self.root_surfaces, "pressure", *args)
     
@@ -155,7 +155,7 @@ class SaltSetup:
         
 
     def updateMeshCollection(self):
-        self.file_reader_meshes.createPvDFile( "land_meshes.pvd")
+        self.file_reader_meshes.createPvDFile( "land_meshes_"+self.setup_name + ".pvd")
         files = self.file_reader_meshes.getSortedFiles()
         for file in files[::-1]:
             if("_pcs_0_ts_0" in file):
@@ -166,7 +166,7 @@ class SaltSetup:
         self.file_reader_trees = SFN.ReadAndSortFileNames(self.working_directory, prefix, postfix)
 
     def updateTreeCollection(self):
-        self.file_reader_trees.createPvDFile( "tree_meshes.pvd") 
+        self.file_reader_trees.createPvDFile( "tree_meshes_"+self.setup_name + ".pvd") 
         files = self.file_reader_trees.getSortedFiles()
         self.file_reader_trees.addMeshesToPvdFile(files)
         
