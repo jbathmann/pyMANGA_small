@@ -10,13 +10,14 @@ sys.path.append('./pybettina/')
 import Land
 import Flora
 import SALT
+import Tree
 import numpy as np
-working_directory = "./testruns/"
-setup_name ="testruns"
+working_directory = "./testcases/2trees/"
+setup_name ="2trees"
 prefix = setup_name + "_Output_pcs"
 postfix = ".vtu"
-land = Land.Land("testtestrunsmesh", working_directory)
-land.create3DRectangularLand("testtestrunsmesh", 0, 0, -1, 10, 10, 1, 61, 61, 2)
+land = Land.Land("test2treesmesh", working_directory)
+land.create3DRectangularLand("test2treesmesh", 0, 0, -3, 10, 3, 1, 101, 31, 2)
 n = land.initial_mesh.grid.GetNumberOfPoints()
 c,p , iD = [], [], []
 for i in range(n):
@@ -27,9 +28,15 @@ for i in range(n):
 land.setCIniPIniAndNodeIds(["c_ini", "p_ini"], "bulk_node_ids", [np.array(c), np.array(p)], np.array(iD))
 land.outputLand()
 
-flora = Flora.Flora("testrunsflora", "testrunsconstants", land, working_directory)
-flora.randomlyPlantTreesInRectangularDomain([10],["Avicennia"],land.bounding_box)
+flora = Flora.Flora("2treesflora", "2treesconstants", land, working_directory)
+new_tree = Tree.Tree(2.5, 1.5, flora.land, "Avicennia", 0)
+new_tree.plantTree(flora.working_directory)
+flora.trees.append(new_tree)
 
+
+second_tree = Tree.Tree(4., 1.5, flora.land, "Avicennia", 1)
+second_tree.plantTree(flora.working_directory)
+flora.trees.append(second_tree)
 
 model = SALT.SaltSetup(setup_name, working_directory, land, flora)
 model.setVariableNames("pressure","concentration")

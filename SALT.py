@@ -157,9 +157,12 @@ class SaltSetup:
     def updateMeshCollection(self):
         self.file_reader_meshes.createPvDFile( "land_meshes_"+self.setup_name + ".pvd")
         files = self.file_reader_meshes.getSortedFiles()
-        for file in files[::-1]:
+        rm_files = []
+        for file in files:
             if("_pcs_0_ts_0" in file):
-                files.remove(file)
+                rm_files.append(file)
+        for rm in rm_files:
+            files.remove(rm)
         self.file_reader_meshes.addMeshesToPvdFile(files)
 
     def createTreeCollection(self, prefix, postfix):

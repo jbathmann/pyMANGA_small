@@ -34,7 +34,9 @@ class ReadAndSortFileNames:
         files = self.getSortedFiles()
         for file in files:
             time = float(file.strip(self.postfix).split("_t_")[-1])
-            if t_begin <= time <= t_end:
+            if time == t_begin and "_ts_0_t_" in file:
+                relevant_files.append(file)
+            if t_begin < time <= t_end:
                 relevant_files.append(file)
         return relevant_files
 
@@ -57,7 +59,7 @@ class ReadAndSortFileNames:
 
         for line in lines:
             file.write(line)
-        for mesh in meshes[:-1]:
+        for mesh in meshes:
             t = float(mesh.strip(".vtu").split("_t_")[-1])
             file.write('        <DataSet timestep="' + str(t) + '" group="" part="0" file="'+ mesh + '"/>\n')
         file.write("""  </Collection>
