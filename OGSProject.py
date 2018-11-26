@@ -14,6 +14,7 @@ class OGSProject:
         self.g = 9.81
         self.c_ini_name = "c_ini"
         self.p_ini_name = "p_ini"
+        self.q_ini_name = "q_ini"
         
     def setProjectdir(self, project_dir):
         self.project_dir = project_dir
@@ -67,12 +68,20 @@ class OGSProject:
     def writeProject(self):
         self.project.writeProjectFile()
         
-    def createBoundaryConditionsFromList(self, mesh_list, variable, tYpe):
+    def createBoundaryConditionsFromList(self, mesh_list, variable):
         for mesh in mesh_list:
-            if variable == self.c_var_name:
-                self.project.createBoundaryCondition("c",tYpe, "geometry","right",mesh, self.c_ini_name)
-            if variable == self.p_var_name:
-                self.project.createBoundaryCondition("p",tYpe, "geometry","right",mesh, self.p_ini_name)
+            if "right" in mesh:
+                if variable == self.c_var_name:
+                    #"constant", "coeff1", "coeff2", "coeff3"
+                    #"zero", "self,q_ini_name", "zero", "zero"
+                    self.project.createBoundaryCondition("c", "NonuniformVariableDependentNeumann", mesh, "zero", self.q_ini_name, "zero", "zero")
+                if variable == self.p_var_name:
+                    self.project.createBoundaryCondition("p", "NonuniformNeumann", "geometry","right",mesh, self.q_ini_name)
+            else:
+                if variable == self.c_var_name:
+                    self.project.createBoundaryCondition("c", "NonuniformDirichlet", "geometry","right",mesh, self.c_ini_name)
+                if variable == self.p_var_name:
+                    self.project.createBoundaryCondition("p", "NonuniformDirichlet", "geometry","right",mesh, self.p_ini_name)
     def createTreeBoundaryConditionsFromList(self, mesh_list, variable, tYpe, constant, coeff1, coeff2, coeff3):             
         for mesh in mesh_list:
             if variable == self.c_var_name:

@@ -52,9 +52,10 @@ class SaltSetup:
         self.ogsPrj.initializeProject()
         self.ogsPrj.project.output_prefix = self.setup_name + "_Output"
         
-    def setInitialConditionNames(self, p_ini, c_ini):
+    def setInitialConditionNames(self, p_ini, c_ini, q_ini):
         self.c_ini_name = c_ini
         self.p_ini_name = p_ini
+        self.q_ini_name = q_ini
         self.ogsPrj.setInitialConditionName(p_ini, c_ini)
         
     def setVariableNames(self, p_var, c_var):
@@ -63,10 +64,14 @@ class SaltSetup:
         self.ogsPrj.setVariableNames(p_var, c_var)
         self.land.setCurrentPropertyNames([c_var,p_var])
         
-    def setInitialConditionName(self, p_ini, c_ini):
+    def setInitialConditionName(self, p_ini, c_ini, q_ini):
         self.c_ini_name = c_ini
         self.p_ini_name = p_ini
+        self.q_ini_name = q_ini
         self.ogsPrj.setInitialConditionName(p_ini, c_ini)
+        
+    def setQiniArray(self, q_ini):
+        self.q_ini = q_ini
         
     def addBoundaryConditionForSurfaces(self, variable, *args):
         self.ogsPrj.createBoundaryConditionsFromList(self.boundary_surfaces, variable, *args)
@@ -111,13 +116,17 @@ class SaltSetup:
         boundary.grid.SetCells(5,cells)
         full_c_ini = land_grid.GetPointData().GetArray(self.c_ini_name)
         full_p_ini = land_grid.GetPointData().GetArray(self.p_ini_name)
-        boundary_c_ini, boundary_p_ini = np.zeros(len(ids)), np.zeros(len(ids)) 
+        full_q_ini = self.q_ini
+        boundary_c_ini, boundary_p_ini, boundary_q_ini = np.zeros(len(ids)), np.zeros(len(ids)), np.zeros(len(ids))  
         for i in range(len(ids)):
             iD = ids[i]
             boundary_c_ini[i]=full_c_ini .GetTuple(iD)[0]
             boundary_p_ini[i]=(full_p_ini .GetTuple(iD)[0])
+            boundary_q_ini[i]=(full_q_ini[iD])
         boundary.AddPropertyVector(np.array(boundary_c_ini),self.c_ini_name, "double")
         boundary.AddPropertyVector(np.array(boundary_p_ini),self.p_ini_name, "double")
+        boundary.AddPropertyVector(np.array(boundary_q_ini),self.q_ini_name, "double")
+        boundary.AddPropertyVector(0,"zero", "double")
         boundary.OutputMesh(self.working_directory)
         self.boundary_surfaces.append(boundary_mesh_name)
         
@@ -131,8 +140,8 @@ class SaltSetup:
     
     def updateBoundaryConditions(self):
         self.ogsPrj.resetBoundaryConditions()
-        self.addBoundaryConditionForSurfaces("pressure", "NonuniformDirichlet")
-        self.addBoundaryConditionForSurfaces("concentration", "NonuniformDirichlet")
+        self.addBoundaryConditionForSurfaces("pressure")
+        self.addBoundaryConditionForSurfaces("concentration")
         self.updateFloraBoundaryConditions()
         
     def runOGS(self):

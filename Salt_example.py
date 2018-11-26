@@ -16,7 +16,7 @@ setup_name ="testruns"
 prefix = setup_name + "_Output_pcs"
 postfix = ".vtu"
 land = Land.Land("testtestrunsmesh", working_directory)
-land.create3DRectangularLand("testtestrunsmesh", 0, 0, -1, 10, 10, 1, 61, 61, 2)
+land.create3DRectangularLand("testtestrunsmesh", 0, 0, -1, 10, 10, 1, 51, 51, 2)
 n = land.initial_mesh.grid.GetNumberOfPoints()
 c,p , iD = [], [], []
 for i in range(n):
