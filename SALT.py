@@ -162,6 +162,13 @@ class SaltSetup:
     def createMeshCollection(self, prefix, postfix):
         self.file_reader_meshes = SFN.ReadAndSortFileNames(self.working_directory, prefix, postfix)
         
+    def createFloraCollection(self, prefix, postfix):
+        self.file_reader_flora = SFN.ReadAndSortFileNames(self.working_directory, prefix, postfix)
+
+    def updateFloraCollection(self):
+        self.file_reader_flora.createPvDFile( "flora_meshes_"+self.setup_name + ".pvd")
+        files = self.file_reader_flora.getSortedFiles()
+        self.file_reader_flora.addMeshesToPvdFile(files)
 
     def updateMeshCollection(self):
         self.file_reader_meshes.createPvDFile( "land_meshes_"+self.setup_name + ".pvd")
@@ -187,6 +194,7 @@ class SaltSetup:
         self.progressBettina(t_files)
         self.updateMeshCollection()
         self.updateTreeCollection()
+        self.updateFloraCollection()
     
     def setAndRunOgs(self, t_ini, t_end, timerepeats,timedeltaTs,
                      outputrepeats, outputdeltaN):
