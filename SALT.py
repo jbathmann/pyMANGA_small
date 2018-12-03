@@ -107,13 +107,16 @@ class SaltSetup:
             point = points[i]
             point = point[(0+shift)%3], point[(1+shift)%3], point[(2+shift)%3]
             temppoints.append(point)
+        boundary = MeshInteractor.MeshInteractor(boundary_mesh_name)
+        boundary.CreateMeshFromPoints([points, ids])
         temp_boundary = MeshInteractor.MeshInteractor(boundary_mesh_name)
         temp_boundary.CreateMeshFromPoints([temppoints, ids])
         temp_boundary.CreateMultipleTriangles()
         cells = temp_boundary.grid.GetCells()
-        boundary = MeshInteractor.MeshInteractor(boundary_mesh_name)
-        boundary.CreateMeshFromPoints([points, ids])
-        boundary.grid.SetCells(5,cells)
+        if(land_grid.GetBounds()[-1]-land_grid.GetBounds()[-2]==0):
+            boundary.grid.SetCells(3,cells)
+        else:
+            boundary.grid.SetCells(5,cells)
         full_c_ini = land_grid.GetPointData().GetArray(self.c_ini_name)
         full_p_ini = land_grid.GetPointData().GetArray(self.p_ini_name)
         full_q_ini = self.q_ini

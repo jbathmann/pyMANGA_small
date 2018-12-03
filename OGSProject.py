@@ -60,6 +60,7 @@ class OGSProject:
         self.project.setStandartTimeLoop()
         self.project.setStandartParameters()
         self.project.setStandardDensityModel()
+        self.project.densityModel = "Constant"
         self.project.setStandardNonlinearSolvers()
         self.project.resetInitialConditions(self.p_ini_name, self.c_ini_name)
         self.project.processspeci_bo_force = "0 0 -"+str(self.g)

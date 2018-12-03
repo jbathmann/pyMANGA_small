@@ -30,6 +30,7 @@ for i in range(n):
     p.append(-(1000+0*35*.7)*9.81*(point[2]+dp_dx*point[0]))
     iD.append(i)
 land.setCIniPIniAndNodeIds(["c_ini", "p_ini"], "bulk_node_ids", [np.array(c), np.array(p)], np.array(iD))
+land.setSurfacePointLocations()
 land.outputLand()
 
 flora = Flora.Flora("2treesflora", "2treesconstants", land, working_directory)

@@ -16,10 +16,12 @@ setup_name ="testruns"
 prefix = setup_name + "_Output_pcs"
 postfix = ".vtu"
 land = Land.Land("testtestrunsmesh", working_directory)
-land.create3DRectangularLand("testtestrunsmesh", 0, 0, -1, 10, 10, 1, 51, 51, 2)
+land.create3DRectangularLand("testtestrunsmesh", 0, 0, -3, 10, 10, 3, 51, 51, 2)
+#land.create2DRectangularLand("testtestrunsmesh", 0, 0, 10, 10, 51, 51)
+
 n = land.initial_mesh.grid.GetNumberOfPoints()
 c,p ,q, iD = [], [], [], []
-dp_dx = 1e-3
+dp_dx = 5e-3
 for i in range(n):
     point = land.initial_mesh.grid.GetPoints().GetPoint(i)
     
@@ -28,10 +30,11 @@ for i in range(n):
     c.append(.035)
     iD.append(i)
 land.setCIniPIniAndNodeIds(["c_ini", "p_ini"], "bulk_node_ids", [np.array(c), np.array(p)], np.array(iD))
+land.setSurfacePointLocations()
 land.outputLand()
 
 flora = Flora.Flora("testrunsflora", "testrunsconstants", land, working_directory)
-flora.randomlyPlantTreesInRectangularDomain([10],["Avicennia"],land.bounding_box)
+flora.randomlyPlantTreesInRectangularDomain([150],["Avicennia"],land.bounding_box)
 
 
 model = SALT.SaltSetup(setup_name, working_directory, land, flora)
@@ -43,7 +46,7 @@ model.createBoundarySurface("right")
 model.updateBoundaryConditions()
 model.createMeshCollection(prefix, postfix)
 model.createTreeCollection( "Avicennia", ".vtu")
-model.createFloraCollection( "prefix" + "flora_grid", ".vtu")
+model.createFloraCollection("flora_grid", ".vtu")
 #1/2 Jahr = 15778800.0 Sekunde34n
 dt = 15778800.0/(6.)
 for i in range(50*12):
