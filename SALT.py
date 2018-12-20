@@ -28,12 +28,13 @@ sys.path.append('./pyogsproject/')
 import OGSProject
 
 class SaltSetup:
-    def __init__(self, name, working_directory, land, flora, constant_density):
+    def __init__(self, name, working_directory, land, flora, constant_density, output_midstring):
         self.setup_name = name
         self.working_directory = working_directory
         self.boundary_surfaces = []
         self.land = land
         self.flora = flora
+        self.output_midstring = output_midstring
         self.constant_density = constant_density
         self.createOGSProject(constant_density)
         self.initializeBettina()
@@ -51,7 +52,7 @@ class SaltSetup:
         self.ogsPrj = OGSProject.OGSProject(self.working_directory, self.setup_name + "_OGSproject")
         self.ogsPrj.setLandName(self.land.initial_mesh_name)
         self.ogsPrj.initializeProject(constant_density)
-        self.ogsPrj.project.output_prefix = self.setup_name + "_Output"
+        self.ogsPrj.project.output_prefix = self.setup_name + self.output_midstring
         
     def setInitialConditionNames(self, p_ini, c_ini, q_ini):
         self.c_ini_name = c_ini
@@ -120,13 +121,13 @@ class SaltSetup:
             boundary.grid.SetCells(5,cells)
         full_c_ini = land_grid.GetPointData().GetArray(self.c_ini_name)
         full_p_ini = land_grid.GetPointData().GetArray(self.p_ini_name)
-        full_q_ini = self.q_ini
+        full_q_ini = land_grid.GetPointData().GetArray(self.q_ini_name)
         boundary_c_ini, boundary_p_ini, boundary_q_ini = np.zeros(len(ids)), np.zeros(len(ids)), np.zeros(len(ids))  
         for i in range(len(ids)):
             iD = ids[i]
-            boundary_c_ini[i]=full_c_ini .GetTuple(iD)[0]
-            boundary_p_ini[i]=(full_p_ini .GetTuple(iD)[0])
-            boundary_q_ini[i]=(full_q_ini[iD])
+            boundary_c_ini[i]=full_c_ini.GetTuple(iD)[0]
+            boundary_p_ini[i]=full_p_ini.GetTuple(iD)[0]
+            boundary_q_ini[i]=full_q_ini.GetTuple(iD)[0]
         boundary.AddPropertyVector(np.array(boundary_c_ini),self.c_ini_name, "double")
         boundary.AddPropertyVector(np.array(boundary_p_ini),self.p_ini_name, "double")
         boundary.AddPropertyVector(np.array(boundary_q_ini),self.q_ini_name, "double")
@@ -161,7 +162,7 @@ class SaltSetup:
     def updateModel(self):
         self.ogsPrj.setLandName(self.land.initial_mesh_name)
         self.ogsPrj.initializeProject(self.constant_density)
-        self.ogsPrj.project.output_prefix = self.setup_name + "_Output"
+        self.ogsPrj.project.output_prefix = self.setup_name + self.output_midstring
 
     def createMeshCollection(self, prefix, postfix):
         self.file_reader_meshes = SFN.ReadAndSortFileNames(self.working_directory, prefix, postfix)
@@ -170,12 +171,12 @@ class SaltSetup:
         self.file_reader_flora = SFN.ReadAndSortFileNames(self.working_directory, prefix, postfix)
 
     def updateFloraCollection(self):
-        self.file_reader_flora.createPvDFile( "flora_meshes_"+self.setup_name + ".pvd")
+        self.file_reader_flora.createPvDFile(self.setup_name + "_flora_meshes" + ".pvd")
         files = self.file_reader_flora.getSortedFiles()
         self.file_reader_flora.addMeshesToPvdFile(files)
 
     def updateMeshCollection(self):
-        self.file_reader_meshes.createPvDFile( "land_meshes_"+self.setup_name + ".pvd")
+        self.file_reader_meshes.createPvDFile(self.setup_name + "_land_meshes"+ ".pvd")
         files = self.file_reader_meshes.getSortedFiles()
         rm_files = []
         for file in files:
@@ -185,13 +186,21 @@ class SaltSetup:
             files.remove(rm)
         self.file_reader_meshes.addMeshesToPvdFile(files)
 
-    def createTreeCollection(self, prefix, postfix):
-        self.file_reader_trees = SFN.ReadAndSortFileNames(self.working_directory, prefix, postfix)
+    def createTreeCollection(self, species_list, postfix):
+        self.file_reader_trees_list = []
+        for species in species_list:
+            self.file_reader_trees_list.append(SFN.ReadAndSortFileNames(self.working_directory, species, postfix))
 
     def updateTreeCollection(self):
-        self.file_reader_trees.createPvDFile( "tree_meshes_"+self.setup_name + ".pvd") 
-        files = self.file_reader_trees.getSortedFiles()
-        self.file_reader_trees.addMeshesToPvdFile(files)
+        i = 1
+        for file_reader_trees in self.file_reader_trees_list:
+            
+            file_reader_trees.createPvDFile(
+                    self.setup_name + "_tree_meshes_"+ file_reader_trees.prefix 
+                    + ".pvd") 
+            i+=1
+            files = file_reader_trees.getSortedFiles()
+            file_reader_trees.addMeshesToPvdFile(files)
         
     def readAndPassTMeshFileNames(self,t_ini, t_end):
         t_files = self.file_reader_meshes.getFilesInTimeIntervall(t_ini, t_end)
