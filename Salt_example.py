@@ -37,7 +37,7 @@ flora = Flora.Flora("testrunsflora", "testrunsconstants", land, working_director
 flora.randomlyPlantTreesInRectangularDomain([150],["Avicennia"],land.bounding_box)
 
 
-model = SALT.SaltSetup(setup_name, working_directory, land, flora)
+model = SALT.SaltSetup(setup_name, working_directory, land, flora, constant_density = True)
 model.setVariableNames("pressure","concentration")
 model.setInitialConditionName("p_ini", "c_ini", "q_ini")
 model.setQiniArray(np.array(q))

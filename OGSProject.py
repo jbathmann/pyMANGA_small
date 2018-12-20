@@ -53,14 +53,14 @@ class OGSProject:
         self.parameter_types.append(tYpe)
         self.parameter_values.append(value)
 
-    def initializeProject(self):
+    def initializeProject(self, constant_density):
         self.project = pyOgsProject.GenerateProject(self.project_dir+self.project_name + ".prj")
         self.project.setMesh(self.land_name+".vtu")
         self.project.setStandardProcessInformation()
         self.project.setStandartTimeLoop()
         self.project.setStandartParameters()
         self.project.setStandardDensityModel()
-        #self.project.densityModel = "Constant"
+        if constant_density: self.project.densityModel = "Constant"
         self.project.setStandardNonlinearSolvers()
         self.project.resetInitialConditions(self.p_ini_name, self.c_ini_name)
         self.project.processspeci_bo_force = "0 0 -"+str(self.g)

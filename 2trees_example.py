@@ -43,7 +43,7 @@ second_tree = Tree.Tree(5, 1.5, flora.land, "Avicennia", 1)
 second_tree.plantTree(flora.working_directory)
 flora.trees.append(second_tree)
 
-model = SALT.SaltSetup(setup_name, working_directory, land, flora)
+model = SALT.SaltSetup(setup_name, working_directory, land, flora, constant_density=True)
 model.setVariableNames("pressure","concentration")
 model.setInitialConditionName("p_ini", "c_ini", "q_ini")
 model.setQiniArray(np.array(q))

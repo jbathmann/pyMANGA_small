@@ -28,13 +28,14 @@ sys.path.append('./pyogsproject/')
 import OGSProject
 
 class SaltSetup:
-    def __init__(self, name, working_directory, land, flora):
+    def __init__(self, name, working_directory, land, flora, constant_density):
         self.setup_name = name
         self.working_directory = working_directory
         self.boundary_surfaces = []
         self.land = land
         self.flora = flora
-        self.createOGSProject()
+        self.constant_density = constant_density
+        self.createOGSProject(constant_density)
         self.initializeBettina()
         
     def setLand(self, land):
@@ -46,10 +47,10 @@ class SaltSetup:
     def initializeBettina(self):
         self.bettina = Bettina.Bettina(self.setup_name+"Bettina", self.land, self.flora)
         
-    def createOGSProject(self):
+    def createOGSProject(self, constant_density):
         self.ogsPrj = OGSProject.OGSProject(self.working_directory, self.setup_name + "_OGSproject")
         self.ogsPrj.setLandName(self.land.initial_mesh_name)
-        self.ogsPrj.initializeProject()
+        self.ogsPrj.initializeProject(constant_density)
         self.ogsPrj.project.output_prefix = self.setup_name + "_Output"
         
     def setInitialConditionNames(self, p_ini, c_ini, q_ini):
@@ -159,7 +160,7 @@ class SaltSetup:
         
     def updateModel(self):
         self.ogsPrj.setLandName(self.land.initial_mesh_name)
-        self.ogsPrj.initializeProject()
+        self.ogsPrj.initializeProject(self.constant_density)
         self.ogsPrj.project.output_prefix = self.setup_name + "_Output"
 
     def createMeshCollection(self, prefix, postfix):
