@@ -85,16 +85,16 @@ class OGSProject:
                             "zero", self.q_ini_name, "zero", "zero")
                 if variable == self.p_var_name:
                     self.project.createBoundaryCondition(
-                            "p", "NonuniformNeumann", "geometry", "right",
+                            "p", "NonuniformNeumann",
                             mesh, self.q_ini_name)
             else:
                 if variable == self.c_var_name:
                     self.project.createBoundaryCondition(
-                            "c", "NonuniformDirichlet", "geometry", "right",
+                            "c", "NonuniformDirichlet",
                             mesh, self.c_ini_name)
                 if variable == self.p_var_name:
                     self.project.createBoundaryCondition(
-                            "p", "NonuniformDirichlet", "geometry", "right",
+                            "p", "NonuniformDirichlet",
                             mesh, self.p_ini_name)
 
     def createTreeBoundaryConditionsFromList(
