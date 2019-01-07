@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Nov 14 09:04:59 2018
-
+Tool to organise ogs prj files.
+project_dir: path to folder, where project files are saved
+project_name: project file name
 @author: bathmann
 """
 import pyOgsProject
