@@ -54,7 +54,7 @@ pressure_initial_name, concentration_initial_name = "p_ini", "c_ini"
 # darcy_velocity_initial_name: name of the initial darcy velocity distribution.
 # Necessary to define 2nd type boundary conditions
 darcy_velocity_initial_name = "q_ini"
-# nade_id_name: name of the property vector containing the node ids. Necessary
+# node_id_name: name of the property vector containing the node ids. Necessary
 # for ogs to run properly.
 node_id_name = "bulk_node_ids"
 # ini_darcy/pressure/concentration_function(point): functions to create intial

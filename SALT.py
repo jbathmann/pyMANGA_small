@@ -14,10 +14,11 @@ import sys
 sys.path.append('./pymeshinteraction/')
 import MeshPointFinder as MPF
 import MeshInteractor
+import SortFileNames as SFN
 
 sys.path.append('./pybettina/')
 import Bettina
-import SortFileNames as SFN
+
 
 sys.path.append('./pyogsproject/')
 import OGSProject
@@ -192,14 +193,8 @@ class SaltSetup:
                 self.working_directory, prefix, postfix)
 
     def createFloraCollection(self, prefix, postfix):
-        self.file_reader_flora = SFN.ReadAndSortFileNames(
-                self.working_directory, prefix, postfix)
+        self.bettina.createFloraCollection(prefix, postfix)
 
-    def updateFloraCollection(self):
-        self.file_reader_flora.createPvDFile(
-                self.setup_name + "_flora_meshes" + ".pvd")
-        files = self.file_reader_flora.getSortedFiles()
-        self.file_reader_flora.addMeshesToPvdFile(files)
 
     def updateMeshCollection(self):
         self.file_reader_meshes.createPvDFile(
@@ -214,28 +209,12 @@ class SaltSetup:
         self.file_reader_meshes.addMeshesToPvdFile(files)
 
     def createTreeCollection(self, species_list, postfix):
-        self.file_reader_trees_list = []
-        for species in species_list:
-            self.file_reader_trees_list.append(
-                SFN.ReadAndSortFileNames(self.working_directory,
-                                         species, postfix))
-
-    def updateTreeCollection(self):
-        i = 1
-        for file_reader_trees in self.file_reader_trees_list:
-            file_reader_trees.createPvDFile(
-                self.setup_name + "_tree_meshes_" + file_reader_trees.prefix
-                + ".pvd")
-            i += 1
-            files = file_reader_trees.getSortedFiles()
-            file_reader_trees.addMeshesToPvdFile(files)
+        self.bettina.createTreeCollection(species_list, postfix)
 
     def readAndPassTMeshFileNames(self, t_ini, t_end):
         t_files = self.file_reader_meshes.getFilesInTimeIntervall(t_ini, t_end)
         self.progressBettina(t_files)
         self.updateMeshCollection()
-        self.updateTreeCollection()
-        self.updateFloraCollection()
 
     def setAndRunOgs(self, t_ini, t_end, timerepeats, timedeltaTs,
                      outputrepeats, outputdeltaN):

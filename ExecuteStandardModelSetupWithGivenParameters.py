@@ -127,7 +127,7 @@ class Run:
         # pvd_file-output definitions
         model.createMeshCollection(output_midstring, postfix_vtu_files)
         model.createTreeCollection(tree_species, postfix_vtu_files)
-        model.createFloraCollection(flora_name, postfix_vtu_files)
+        model.createFloraCollection(flora_name + "_grid", postfix_vtu_files)
 
         # timeloop for model evolution
         for i in range(number_of_bettina_timesteps):
