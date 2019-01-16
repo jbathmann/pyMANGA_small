@@ -14,21 +14,22 @@ import ExecuteStandardModelSetupWithGivenParameters
 # -- Parameters on local working directories and setup naming ###
 
 # working_directory: Directory, where simulation results are saved. Please make
-# sure the location exists on your local machine
+# sure the location exists on your local machine -- type:string
 working_directory = "./testcases/2trees/"
 # setup_name: This string is contained in all output files generated
+#  -- type:string
 setup_name = "2trees"
 # land_name: specific name, which is contained on all output files for the
-# meshes representing the land domain
+# meshes representing the land domain -- type:string
 land_name = "_exampleland"
 # flora_name: specific name, which is contained on all output files for the
-# meshes associated with the flora
+# meshes associated with the flora -- type:string
 flora_name = "_exampleflora"
 # output_midstring: specific name, which is contained on all output files for
-# the meshes associated with the ogs output
+# the meshes associated with the ogs output -- type:string
 output_midstring = "_ogsOutput"
 # postfix_vtu_files: specific string, which is at the end of all vtu files
-# saved on within the working directory
+# saved on within the working directory -- type:string
 postfix_vtu_files = ".vtu"
 
 
@@ -36,31 +37,33 @@ postfix_vtu_files = ".vtu"
 
 # - Geometry ##
 # land_length_x,y,z: the dimensions (in m) of the simulated land domain
+# -- type:float
 land_length_x, land_length_y, land_length_z = 10, 3, 3
 # land_origin_x,y: the coordinates of the upper-left-bottom corner of the land
 # mesh. The z_coordinate of the upper_left_bottom corner is always set to
-# z = -land_length_z
+# z = -land_length_z -- type:float
 land_origin_x, land_origin_y = 0, 0
-# land_layers_x,y,z: the number of layers in each dimension.
+# land_layers_x,y,z: the number of layers in each dimension. -- type:int
 land_layers_x, land_layers_y, land_layers_z = 100, 30, 1
 
-# #  Names for primary variables in subsurface processes ##
+# - Names for primary variables in subsurface processes ##
 # pressure_variable_name, concentration_variable_name: Names of the primary
-# variables themselves
+# variables themselves -- type:string
 pressure_variable_name, concentration_variable_name = \
                                                 "pressure", "concentration"
 # pressure_initial_name, concentration_initial_name: names for the initial con-
-# ditions for the primary variables
+# ditions for the primary variables -- type:string
 pressure_initial_name, concentration_initial_name = "p_ini", "c_ini"
 # darcy_velocity_initial_name: name of the initial darcy velocity distribution.
-# Necessary to define 2nd type boundary conditions
+# Necessary to define 2nd type boundary conditions -- type:string
 darcy_velocity_initial_name = "q_ini"
-# nade_id_name: name of the property vector containing the node ids. Necessary
-# for ogs to run properly.
+# node_id_name: name of the property vector containing the node ids. Necessary
+# for ogs to run properly. -- type:string
 node_id_name = "bulk_node_ids"
 # ini_darcy/pressure/concentration_function(point): functions to create intial
 # conditions. Note: all functions must depend on point, which is a (3,1) tuple
 # in order to allow for spatially depending initial distributions
+# -- type:python function declarations
 dp_dx = 1e-3
 
 
@@ -80,14 +83,15 @@ def ini_concentration_function(point):
 
 # tree species: list containing the species which considered in the initial
 # tree distribution. Given in the form: [species1, species2, ...], with
-# species_i being a string with the species name
+# species_i being a string with the species name -- type:list of strings
 tree_species = ["Avicennia"]
 # initial_plants: number of individums planted for each species for the initial
 # plant distributions. Given in the form [n_species1, n_species2, ...], with
 # n_speciesi being the number of individuums of each species
+# -- type:list of ints
 initial_plants = [150]
 # flora_plant_function: function defining how the initial plant distribution
-# has to look like
+# has to look like -- type:python function declarations
 
 
 def flora_plant_function(flora, land):
@@ -105,24 +109,26 @@ def flora_plant_function(flora, land):
 
 # ## Parameters on time loop ###
 # bettina_timesteps: length of one timestep in bettina in [s]. Note: half a
-# year corresponds to 15778800.0 seconds
+# year corresponds to 15778800.0 seconds -- type:double
 bettina_delta_t = 15778800.0/(6.)
 # number_of_bettina_timesteps: total number of iterations of the bettina model
+# -- type:int
 number_of_bettina_timesteps = 50 * 12
 # ogs_timerepeats
 # ogs_time_delta_ts: list containing different timestep lengths in s for the
-# ogs simulation
+# ogs simulation -- type:list of doubles
 ogs_time_delta_ts = [1e-1, 1e0, 60, 300, 900, 1800,
                      3600, 3600*2, 3600*4, 3600*8]
 # ogs_timerepeats: list of the same length as ogs_time_delta_ts containing the
 # number of iterations with the different step sizes given in ogs_time_delta_ts
+# -- type:list of ints
 ogs_timerepeats = [1,   1,  10, 10,  10,  50,   100,   100,     100,  1000]
 # ogs_outputdeltaN: list containing number of steps for after which ogs is
-# writing an output file
+# writing an output file -- type:list of ints
 ogs_outputdeltaN = [10000]
 # ogs_outputrepeats: list of same shape as ogs_outputdeltaN containing the
 # number of iterations with the different output intervals given in
-# ogs_outputdeltaN
+# ogs_outputdeltaN -- type:list of ints
 ogs_outputrepeats = [1]
 
 
