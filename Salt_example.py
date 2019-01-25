@@ -43,7 +43,7 @@ land_length_x, land_length_y, land_length_z = 5, 5, 3
 # z = -land_length_z -- type:float
 land_origin_x, land_origin_y = 0, 0
 # land_layers_x,y,z: the number of layers in each dimension. -- type:int
-land_layers_x, land_layers_y, land_layers_z = 25, 25, 1
+land_layers_x, land_layers_y, land_layers_z = 50, 50, 1
 
 # - Names for primary variables in subsurface processes ##
 # pressure_variable_name, concentration_variable_name: Names of the primary
@@ -88,7 +88,7 @@ tree_species = ["Avicennia"]
 # plant distributions. Given in the form [n_species1, n_species2, ...], with
 # n_speciesi being the number of individuums of each species
 # -- type:list of ints
-initial_plants = [150]
+initial_plants = [5]
 # flora_plant_function: function defining how the initial plant distribution
 # has to look like -- type:python function declarations
 
@@ -106,21 +106,18 @@ bettina_delta_t = 15778800.0/(6.)
 # -- type:int
 number_of_bettina_timesteps = 50 * 12
 # ogs_timerepeats
-# ogs_time_delta_ts: list containing different timestep lengths in s for the
+# fixed_output_times: list containing different fixed output times in s for the
 # ogs simulation -- type:list of doubles
-ogs_time_delta_ts = [1e-1, 1e0, 60, 300, 900, 1800,
-                     3600, 3600*2, 3600*4, 3600*8]
-# ogs_timerepeats: list of the same length as ogs_time_delta_ts containing the
-# number of iterations with the different step sizes given in ogs_time_delta_ts
-# -- type:list of ints
-ogs_timerepeats = [1,   1,  10, 10,  10,  50,   100,   100,     100,  1000]
+ogs_fixed_output_times = [60 * 60 * 24 * 5, 60 * 60 * 24 * 10,
+                          60 * 60 * 24 * 15, 60 * 60 * 24 * 20,
+                          60 * 60 * 24 * 25, 60 * 60 * 24 * 30]
 # ogs_outputdeltaN: list containing number of steps for after which ogs is
 # writing an output file -- type:list of ints
 ogs_outputdeltaN = [10000]
 # ogs_outputrepeats: list of same shape as ogs_outputdeltaN containing the
 # number of iterations with the different output intervals given in
 # ogs_outputdeltaN -- type:list of ints
-ogs_outputrepeats = [1]
+ogs_outputrepeats = [100]
 
 
 # -- Salt model execution file import and run ###
@@ -136,5 +133,5 @@ ExecuteStandardModelSetupWithGivenParameters.Run(
         ini_pressure_function, ini_concentration_function,
         tree_species, initial_plants, flora_plant_function,
         bettina_delta_t, number_of_bettina_timesteps,
-        ogs_time_delta_ts, ogs_timerepeats, ogs_outputdeltaN,
+        ogs_fixed_output_times, ogs_outputdeltaN,
         ogs_outputrepeats)
