@@ -153,11 +153,6 @@ class SaltSetup:
         boundary.OutputMesh(self.working_directory)
         self.boundary_surfaces.append(boundary_mesh_name)
 
-    def setTimeSteppingAndOutputLoopsForOgs(self, timerepeats, timedeltaTs,
-                                            outputrepeats, outputdeltaN):
-        self.ogsPrj.setTimeSteppingAndOutputLoops(timerepeats, timedeltaTs,
-                                                  outputrepeats, outputdeltaN)
-
     def updateFloraBoundaryConditions(self):
         self.root_surfaces = self.flora.getAllRootNames()
         c1, c2, c3 = "coeff1", "coeff2", "coeff3"
@@ -216,11 +211,13 @@ class SaltSetup:
         self.progressBettina(t_files)
         self.updateMeshCollection()
 
-    def setAndRunOgs(self, t_ini, t_end, timerepeats, timedeltaTs,
-                     outputrepeats, outputdeltaN):
+    def setAndRunOgs(self, t_ini, t_end, outputrepeats, outputdeltaN,
+                    fixed_output_times):
         self.setOgsTiniTend(t_ini, t_end)
-        self.setTimeSteppingAndOutputLoopsForOgs(timerepeats, timedeltaTs,
-                                                 outputrepeats, outputdeltaN)
-
+        self.ogsPrj.setOutputLoops(outputrepeats, outputdeltaN)
+        for i in range(len(fixed_output_times)):
+            fixed_output_times[i] += t_ini
+        print(fixed_output_times)
+        self.ogsPrj.setFixedOutputTimes(fixed_output_times)
         self.writeOgsProject()
         self.runOGS()

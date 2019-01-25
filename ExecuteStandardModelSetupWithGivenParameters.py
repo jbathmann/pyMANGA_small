@@ -81,7 +81,7 @@ class Run:
                  ini_pressure_function, ini_concentration_function,
                  tree_species, initial_plants, flora_plant_function,
                  bettina_delta_t, number_of_bettina_timesteps,
-                 ogs_time_delta_ts, ogs_timerepeats, ogs_outputdeltaN,
+                 ogs_fixed_output_times, ogs_outputdeltaN,
                  ogs_outputrepeats):
         # land domain creation
         land = Land.Land(setup_name + land_name, working_directory)
@@ -109,7 +109,7 @@ class Run:
 
         # salt model setup
         model = SALT.SaltSetup(setup_name, working_directory, land, flora,
-                               True, output_midstring)
+                               False, output_midstring)
         # variable name definition
         model.setVariableNames(pressure_variable_name,
                                concentration_variable_name)
@@ -138,8 +138,8 @@ class Run:
             t_end = (i + 1) * bettina_delta_t
             # ogs execution
             model.setAndRunOgs(
-                    t_ini, t_end, ogs_timerepeats,
-                    ogs_time_delta_ts, ogs_outputrepeats, ogs_outputdeltaN)
+                    t_ini, t_end, ogs_outputrepeats, ogs_outputdeltaN,
+                    ogs_fixed_output_times)
             # analysing output and storing it for the bettina execution
             model.readAndPassTMeshFileNames(t_ini, t_end)
             # bettina timestep and model update

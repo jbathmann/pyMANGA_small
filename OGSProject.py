@@ -61,7 +61,7 @@ class OGSProject:
                                                     self.project_name + ".prj")
         self.project.setMesh(self.land_name+".vtu")
         self.project.setStandardProcessInformation()
-        self.project.setStandartTimeLoop()
+        self.project.setStandartAdaptiveTimeLoop()
         self.project.setStandartParameters()
         self.project.setStandardDensityModel()
         if constant_density:
@@ -107,10 +107,14 @@ class OGSProject:
                 self.project.createBoundaryCondition(
                         "p", tYpe, mesh, constant, coeff1, coeff2, coeff3)
 
-    def setTimeSteppingAndOutputLoops(
-            self, timerepeats, timedeltaTs, outputrepeats, outputdeltaN):
-        self.project.setTimeSteppingAndOutputLoops(timerepeats, timedeltaTs,
-                                                   outputrepeats, outputdeltaN)
+    def setTimeSteppingOutputLoops(self, timerepeats, timedeltaTs):
+        self.project.setFixedTimeStepping(timerepeats, timedeltaTs)
+
+    def setOutputLoops(self, outputrepeats, outputdeltaN):
+        self.project.setOutputLoops(outputrepeats, outputdeltaN)
+
+    def setFixedOutputTimes(self, fixed_output_times):
+        self.project.setFixedOutputTimes(fixed_output_times)
 
     def resetBoundaryConditions(self):
         self.project.resetBoundaryConditions()
