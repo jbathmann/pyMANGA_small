@@ -44,7 +44,7 @@ land_length_x, land_length_y, land_length_z = 10, 6, 3
 # z = -land_length_z -- type:float
 land_origin_x, land_origin_y = 0, 0
 # land_layers_x,y,z: the number of layers in each dimension. -- type:int
-land_layers_x, land_layers_y, land_layers_z = 15, 10, 2
+land_layers_x, land_layers_y, land_layers_z = 40, 24, 2
 
 # - Names for primary variables in subsurface processes ##
 # pressure_variable_name, concentration_variable_name: Names of the primary
