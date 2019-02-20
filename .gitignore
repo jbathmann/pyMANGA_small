@@ -116,3 +116,5 @@ testcases/Video_SmallBox1Tree
 testruns/
 land_meshes.pvd
 testcases
+documentation/html
+documentation/latex
