@@ -1,68 +1,5 @@
 # !/usr/bin/env python3
 #  -*- coding: utf-8 -*-
-"""
-Class to run model with given parameters:
-# #  Parameters on local working directories and setup naming # # #
-working_directory: Directory, where simulation results are saved. Please make
-sure the location exists on your local machine
-setup_name: This string is contained in all output files generated
-land_name: specific name, which is contained on all output files for the
-meshes representing the land domain
-flora_name: specific name, which is contained on all output files for the
-meshes associated with the flora
-output_midstring: specific name, which is contained on all output files for the
-meshes associated with the ogs output
-postfix_vtu_files: specific string, which is at the end of all vtu files
-saved on within the working directory
-
-# #  Parameters on land domain properties # # #
-#  Geometry # #
-land_length_x,y,z: the dimensions (in m) of the simulated land domain
-land_origin_x,y: the coordinates of the upper-left-bottom corner of the land
-mesh. The z_coordinate of the upper_left_bottom corner is always set to
-z = -land_length_z
-land_layers_x,y,z: the number of layers in each dimension.
-#  Names for primary variables in subsurface processes # #
-pressure_variable_name, concentration_variable_name: Names of the primary
-variables themselves
-pressure_initial_name, concentration_initial_name: names for the initial con-
-ditions for the primary variables
-darcy_velocity_initial_name: name of the initial darcy velocity distribution.
-Necessary to define 2nd type boundary conditions
-nade_id_name: name of the property vector containing the node ids. Necessary
-for ogs to run properly.
-ini_darcy/pressure/concentration_function(point): functions to create intial
-conditions. Note: all functions must depend on point, which is a (3,1) tuple
-in order to allow for spatially depending initial distributions
-
-# #  Parameters on flora properties # # #
-tree species: list containing the species which considered in the initial
-tree distribution. Given in the form: [species1, species2, ...], with speciesi
-being a string with the species name
-initial_plants: number of individums planted for each species for the initial
-plant distributions. Given in the form [n_species1, n_species2, ...], with
-n_speciesi being the number of individuums of each species
-flora_plant_function: function defining how the initial plant distribution has
-to look like
-
-# #  Parameters on time loop # # #
-bettina_timesteps: length of one timestep in bettina in [s]. Note: half a year
-corresponds to 15778800.0 seconds
-number_of_bettina_timesteps: total number of iterations of the bettina model
-ogs_timerepeats
-ogs_time_delta_ts: list containing different timestep lengths in s for the ogs
-simulation
-ogs_timerepeats: list of the same length as ogs_time_delta_ts containing the
-number of iterations with the different step sizes given in ogs_time_delta_ts
-ogs_outputdeltaN: list containing number of steps for after which ogs is
-writing an output file
-ogs_outputrepeats: list of same shape as ogs_outputdeltaN containing the
-number of iterations with the different output intervals given in
-ogs_outputdeltaN
-
-@date: 2018-Today
-@author: jasper.bathmann@ufz.de
-"""
 import sys
 sys.path.append('./pybettina/')
 import Land
@@ -71,6 +8,69 @@ import SALT
 
 
 class Run:
+    """
+    Class to run model with given parameters:
+    # #  Parameters on local working directories and setup naming # # #
+    working_directory: Directory, where simulation results are saved. Please make
+    sure the location exists on your local machine
+    setup_name: This string is contained in all output files generated
+    land_name: specific name, which is contained on all output files for the
+    meshes representing the land domain
+    flora_name: specific name, which is contained on all output files for the
+    meshes associated with the flora
+    output_midstring: specific name, which is contained on all output files for the
+    meshes associated with the ogs output
+    postfix_vtu_files: specific string, which is at the end of all vtu files
+    saved on within the working directory
+
+    # #  Parameters on land domain properties # # #
+    #  Geometry # #
+    land_length_x,y,z: the dimensions (in m) of the simulated land domain
+    land_origin_x,y: the coordinates of the upper-left-bottom corner of the land
+    mesh. The z_coordinate of the upper_left_bottom corner is always set to
+    z = -land_length_z
+    land_layers_x,y,z: the number of layers in each dimension.
+    #  Names for primary variables in subsurface processes # #
+    pressure_variable_name, concentration_variable_name: Names of the primary
+    variables themselves
+    pressure_initial_name, concentration_initial_name: names for the initial con-
+    ditions for the primary variables
+    darcy_velocity_initial_name: name of the initial darcy velocity distribution.
+    Necessary to define 2nd type boundary conditions
+    nade_id_name: name of the property vector containing the node ids. Necessary
+    for ogs to run properly.
+    ini_darcy/pressure/concentration_function(point): functions to create intial
+    conditions. Note: all functions must depend on point, which is a (3,1) tuple
+    in order to allow for spatially depending initial distributions
+
+    # #  Parameters on flora properties # # #
+    tree species: list containing the species which considered in the initial
+    tree distribution. Given in the form: [species1, species2, ...], with speciesi
+    being a string with the species name
+    initial_plants: number of individums planted for each species for the initial
+    plant distributions. Given in the form [n_species1, n_species2, ...], with
+    n_speciesi being the number of individuums of each species
+    flora_plant_function: function defining how the initial plant distribution has
+    to look like
+
+    # #  Parameters on time loop # # #
+    bettina_timesteps: length of one timestep in bettina in [s]. Note: half a year
+    corresponds to 15778800.0 seconds
+    number_of_bettina_timesteps: total number of iterations of the bettina model
+    ogs_timerepeats
+    ogs_time_delta_ts: list containing different timestep lengths in s for the ogs
+    simulation
+    ogs_timerepeats: list of the same length as ogs_time_delta_ts containing the
+    number of iterations with the different step sizes given in ogs_time_delta_ts
+    ogs_outputdeltaN: list containing number of steps for after which ogs is
+    writing an output file
+    ogs_outputrepeats: list of same shape as ogs_outputdeltaN containing the
+    number of iterations with the different output intervals given in
+    ogs_outputdeltaN
+
+    @date: 2018-Today
+    @author: jasper.bathmann@ufz.de
+    """
     def __init__(self, working_directory, setup_name, land_name, flora_name,
                  output_midstring, postfix_vtu_files, land_length_x,
                  land_length_y, land_length_z, land_origin_x, land_origin_y,

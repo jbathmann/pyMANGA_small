@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Tool to organise ogs prj files.
-project_dir: path to folder, where project files are saved
-project_name: project file name
-@author: bathmann
-"""
+
 import pyOgsProject
 import os
 
 
 class OGSProject:
+    ## Tool to organise ogs prj files.
+    #  @VAR project_dir: path to folder, where project files are saved \n
+    #  @VAR project_name: project file name
+    #  @author: bathmann
+
     def __init__(self, project_dir, project_name):
         self.project_dir = project_dir
         self.project_name = project_name

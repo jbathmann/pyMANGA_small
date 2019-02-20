@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Class managing the whola salt seltup. This class is containing 3 important ob-
-jects: land, flora and the ogs-project information. The built-in functions are
-designed to manage information transfer between bettina and ogs model
-simulations.
-@date: 2018 - Today
-@author: jasper.bathmann@ufz.de
-"""
+
+
 import numpy as np
 import sys
 sys.path.append('./pymeshinteraction/')
@@ -25,6 +19,15 @@ import OGSProject
 
 
 class SaltSetup:
+
+    ## Class managing the whole salt seltup. This class is containing 3
+    #  important objects: land, flora and the ogs-project information. The
+    #  built-in functions are designed to manage information transfer between
+    #  bettina and ogs model simulations.
+    #  @date: 2018 - Today
+    #  @author: jasper.bathmann@ufz.de
+
+
     def __init__(self, name, working_directory, land, flora, constant_density,
                  output_midstring):
         self.setup_name = name
