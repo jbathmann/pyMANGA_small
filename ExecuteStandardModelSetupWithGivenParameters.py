@@ -121,6 +121,7 @@ class Run:
         # "bottom", "front", "back") of land domain box
         model.createBoundarySurface("left")
         model.createBoundarySurface("right")
+        model.createBoundarySurface("top")
         # storing of boundary conditions in the model
         model.updateBoundaryConditions()
 
