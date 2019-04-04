@@ -81,22 +81,21 @@ class OGSProject:
                     # "constant", "coeff1", "coeff2", "coeff3"
                     # "zero", "self,q_ini_name", "zero", "zero"
                     self.project.createBoundaryCondition(
-                            "c", "NonuniformVariableDependentNeumann", mesh,
+                            "c", "VariableDependentNeumann", mesh,
                             "zero", self.q_ini_name, "zero", "zero")
                 if variable == self.p_var_name:
                     self.project.createBoundaryCondition(
-                            "p", "NonuniformNeumann",
+                            "p", "Neumann",
                             mesh, self.q_ini_name)
             else:
                 if variable == self.c_var_name:
                     self.project.createBoundaryCondition(
-                            "c", "NonuniformDirichlet",
+                            "c", "Dirichlet",
                             mesh, self.c_ini_name)
                 if variable == self.p_var_name:
                     self.project.createBoundaryCondition(
-                            "p", "NonuniformDirichlet",
+                            "p", "Dirichlet",
                             mesh, self.p_ini_name)
-
     def createTreeBoundaryConditionsFromList(
             self, mesh_list, variable, tYpe, constant, coeff1, coeff2, coeff3):
         for mesh in mesh_list:

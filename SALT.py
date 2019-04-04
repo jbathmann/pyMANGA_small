@@ -27,7 +27,6 @@ class SaltSetup:
     #  @date: 2018 - Today
     #  @author: jasper.bathmann@ufz.de
 
-
     def __init__(self, name, working_directory, land, flora, constant_density,
                  output_midstring):
         self.setup_name = name
@@ -159,7 +158,7 @@ class SaltSetup:
     def updateFloraBoundaryConditions(self):
         self.root_surfaces = self.flora.getAllRootNames()
         c1, c2, c3 = "coeff1", "coeff2", "coeff3"
-        args = "NonuniformVariableDependentNeumann", "constant", c1, c2, c3
+        args = "VariableDependentNeumann", "constant", c1, c2, c3
         self.ogsPrj.createTreeBoundaryConditionsFromList(self.root_surfaces,
                                                          "pressure", *args)
 
@@ -193,7 +192,6 @@ class SaltSetup:
     def createFloraCollection(self, prefix, postfix):
         self.bettina.createFloraCollection(prefix, postfix)
 
-
     def updateMeshCollection(self):
         self.file_reader_meshes.createPvDFile(
                 self.setup_name + "_land_meshes" + ".pvd")
@@ -215,7 +213,7 @@ class SaltSetup:
         self.updateMeshCollection()
 
     def setAndRunOgs(self, t_ini, t_end, outputrepeats, outputdeltaN,
-                    fixed_output_times):
+                     fixed_output_times):
         self.setOgsTiniTend(t_ini, t_end)
         self.ogsPrj.setOutputLoops(outputrepeats, outputdeltaN)
         for i in range(len(fixed_output_times)):
