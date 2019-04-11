@@ -155,12 +155,14 @@ class SaltSetup:
         boundary.OutputMesh(self.working_directory)
         self.boundary_surfaces.append(boundary_mesh_name)
 
-    def updateFloraBoundaryConditions(self):
+     def updateFloraBoundaryConditions(self):
         self.root_surfaces = self.flora.getAllRootNames()
-        c1, c2, c3 = "coeff1", "coeff2", "coeff3"
-        args = "VariableDependentNeumann", "constant", c1, c2, c3
+        constant, c1, c2, c3 = "constant", "coeff1", "coeff2", "coeff3"
+        args = "VariableDependentNeumann", constant, c1, c2, c3
+        args2 ="HCOpenBoundary", "one", c1, c2, c3
         self.ogsPrj.createTreeBoundaryConditionsFromList(self.root_surfaces,
-                                                         "pressure", *args)
+                                                          "pressure", *args)
+        self.ogsPrj.createTreeBoundaryConditionsFromList(self.root_surfaces,
 
     def updateBoundaryConditions(self):
         self.ogsPrj.resetBoundaryConditions()

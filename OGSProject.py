@@ -76,16 +76,23 @@ class OGSProject:
 
     def createBoundaryConditionsFromList(self, mesh_list, variable):
         for mesh in mesh_list:
-            if "top" in mesh:
+            """if "top" in mesh:
                 if variable == self.c_var_name:
                     self.project.createBoundaryCondition(
                             "c", "HCOpenBoundary", mesh,
-                            "one")
-            elif "right" in mesh:
+                            "one")"""
+            if "right" in mesh:
                 if variable == self.p_var_name:
                     self.project.createBoundaryCondition(
-                            "p", "Neumann",
+#                            "p", "Neumann",
+                            "p", "Dirichlet",
                             mesh, self.q_ini_name)
+#            elif "bottom" in mesh:
+#                if variable == self.p_var_name:
+#                    self.project.createBoundaryCondition(
+##                            "p", "Neumann",
+#                            "p", "Neumann",
+#                            mesh, "zero")
             elif "left" in mesh:
                 if variable == self.c_var_name:
                     self.project.createBoundaryCondition(
@@ -93,15 +100,15 @@ class OGSProject:
                             mesh, self.c_ini_name)
                 if variable == self.p_var_name:
                     self.project.createBoundaryCondition(
-                            "p", "Dirichlet",
-                            mesh, self.p_ini_name)
+                            "p", "Neumann",
+                            mesh, self.q_ini_name)
 
     def createTreeBoundaryConditionsFromList(
             self, mesh_list, variable, tYpe, constant, coeff1, coeff2, coeff3):
         for mesh in mesh_list:
             if variable == self.c_var_name:
                 self.project.createBoundaryCondition(
-                        "c", tYpe, mesh, constant, coeff1, coeff2, coeff3)
+                        "c", tYpe, mesh, "one")
             if variable == self.p_var_name:
                 self.project.createBoundaryCondition(
                         "p", tYpe, mesh, constant, coeff1, coeff2, coeff3)
