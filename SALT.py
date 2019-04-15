@@ -151,14 +151,14 @@ class SaltSetup:
                                    "double")
         boundary.AddPropertyVector(np.array(boundary_q_ini), self.q_ini_name,
                                    "double")
-        boundary.AddPropertyVector(0, "zero", "double")
+        boundary.AddPropertyVector(1, "one", "double")
         boundary.OutputMesh(self.working_directory)
         self.boundary_surfaces.append(boundary_mesh_name)
 
     def updateFloraBoundaryConditions(self):
         self.root_surfaces = self.flora.getAllRootNames()
-        c1, c2, c3 = "coeff1", "coeff2", "coeff3"
-        args = "VariableDependentNeumann", "constant", c1, c2, c3
+        constant, c1, c2, c3 = "constant", "coeff1", "coeff2", "coeff3"
+        args = "VariableDependentNeumann", constant, c1, c2, c3
         self.ogsPrj.createTreeBoundaryConditionsFromList(self.root_surfaces,
                                                          "pressure", *args)
 
