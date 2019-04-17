@@ -95,13 +95,13 @@ initial_plants = [150]
 
 
 def flora_plant_function(flora, land):
-    import Tree
-    new_tree = Tree.Tree(2., 2., flora.land, "Avicennia", 0,
+    from pybettina import Tree
+    new_tree = Tree.Tree(3., 3., flora.land, "Avicennia", 0,
                          flora.flora_name)
     new_tree.plantTree(flora.working_directory)
     flora.trees.append(new_tree)
 
-    second_tree = Tree.Tree(4, 2, flora.land, "Avicennia", 1,
+    second_tree = Tree.Tree(6, 3, flora.land, "Avicennia", 1,
                             flora.flora_name)
     second_tree.plantTree(flora.working_directory)
     flora.trees.append(second_tree)

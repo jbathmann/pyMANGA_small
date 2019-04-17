@@ -1,9 +1,7 @@
 # !/usr/bin/env python3
 #  -*- coding: utf-8 -*-
-import sys
-sys.path.append('./pybettina/')
-import Land
-import Flora
+from pybettina import Land
+from pybettina import Flora
 import SALT
 
 

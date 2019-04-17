@@ -1,22 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-
 import numpy as np
-import sys
-sys.path.append('./pymeshinteraction/')
-import MeshPointFinder as MPF
-import MeshInteractor
-import SortFileNames as SFN
-
-sys.path.append('./pybettina/')
-import Bettina
-
-
-sys.path.append('./pyogsproject/')
+from pymeshinteraction import *
+from pybettina import *
 import OGSProject
-
 
 class SaltSetup:
 
@@ -110,7 +98,7 @@ class SaltSetup:
         if location == "top":
             origin[2] = origin[2] + land_mesh.lengthZ
         boundary_mesh_name = land_mesh.meshName + "_" + location + "Boundary"
-        boundary_creator = MPF.MeshPointFinder(land_grid)
+        boundary_creator = MeshPointFinder.MeshPointFinder(land_grid)
         points, ids = boundary_creator.findPointsOnPlane(steps[0], steps[1],
                                                          steps[2], deltas[0],
                                                          deltas[1], deltas[2],
@@ -186,7 +174,7 @@ class SaltSetup:
             self.output_midstring
 
     def createMeshCollection(self, prefix, postfix):
-        self.file_reader_meshes = SFN.ReadAndSortFileNames(
+        self.file_reader_meshes = SortFileNames.ReadAndSortFileNames(
                 self.working_directory, prefix, postfix)
 
     def createFloraCollection(self, prefix, postfix):
