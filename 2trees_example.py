@@ -44,7 +44,7 @@ land_length_x, land_length_y, land_length_z = 12, 6, 5
 # z = -land_length_z -- type:float
 land_origin_x, land_origin_y = 0, 0
 # land_layers_x,y,z: the number of layers in each dimension. -- type:int
-land_layers_x, land_layers_y, land_layers_z = 72, 36, 25
+land_layers_x, land_layers_y, land_layers_z = 48, 24, 20
 
 # - Names for primary variables in subsurface processes ##
 # pressure_variable_name, concentration_variable_name: Names of the primary
@@ -122,7 +122,7 @@ ogs_fixed_output_times = [60 * 60 * 24 * 5, 60 * 60 * 24 * 10,
                           60 * 60 * 24 * 25, 60 * 60 * 24 * 30]
 # ogs_outputdeltaN: list containing number of steps for after which ogs is
 # writing an output file -- type:list of ints
-ogs_outputdeltaN = [500]
+ogs_outputdeltaN = [250]
 # ogs_outputrepeats: list of same shape as ogs_outputdeltaN containing the
 # number of iterations with the different output intervals given in
 # ogs_outputdeltaN -- type:list of ints

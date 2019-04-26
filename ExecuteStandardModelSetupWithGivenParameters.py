@@ -83,7 +83,7 @@ class Run:
                  ogs_outputrepeats):
         # land domain creation
         land = Land.Land(setup_name + land_name, working_directory)
-        land.create3DRectangularLand(setup_name + land_name, land_origin_x,
+        land.create3DDelaunayLand(setup_name + land_name, land_origin_x,
                                      land_origin_y, -land_length_z,
                                      land_length_x, land_length_y,
                                      land_length_z, land_layers_x + 1,
