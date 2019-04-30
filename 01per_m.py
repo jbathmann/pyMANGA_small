@@ -110,7 +110,7 @@ def flora_plant_function(flora, land):
 # ## Parameters on time loop ###
 # bettina_timesteps: length of one timestep in bettina in [s]. Note: half a
 # year corresponds to 15778800.0 seconds -- type:double
-bettina_delta_t = 15778800.0/(6.)
+bettina_delta_t = 15778800.0/(6.*12)
 # number_of_bettina_timesteps: total number of iterations of the bettina model
 # -- type:int
 number_of_bettina_timesteps = 50 * 12

@@ -15,7 +15,7 @@ import ExecuteStandardModelSetupWithGivenParameters
 
 # working_directory: Directory, where simulation results are saved. Please make
 # sure the location exists on your local machine -- type:string
-working_directory = "./testcases/10per_m/"
+working_directory = "/home/bathmann/code/pysalt/testcases/10per_m/"
 # setup_name: This string is contained in all output files generated
 #  -- type:string
 setup_name = "2trees"
@@ -95,7 +95,7 @@ initial_plants = [150]
 
 
 def flora_plant_function(flora, land):
-    import Tree
+    from pybettina import Tree
     new_tree = Tree.Tree(3., 3., flora.land, "Avicennia", 0,
                          flora.flora_name)
     new_tree.plantTree(flora.working_directory)
@@ -110,7 +110,7 @@ def flora_plant_function(flora, land):
 # ## Parameters on time loop ###
 # bettina_timesteps: length of one timestep in bettina in [s]. Note: half a
 # year corresponds to 15778800.0 seconds -- type:double
-bettina_delta_t = 15778800.0/(6.)
+bettina_delta_t = 15778800.0/(6. * 12)
 # number_of_bettina_timesteps: total number of iterations of the bettina model
 # -- type:int
 number_of_bettina_timesteps = 50 * 12
