@@ -15,7 +15,7 @@ import ExecuteStandardModelSetupWithGivenParameters
 
 # working_directory: Directory, where simulation results are saved. Please make
 # sure the location exists on your local machine -- type:string
-working_directory = "/home/bathmann/code/pysalt/testcases/02per_m/"
+working_directory = "./testcases/02per_m/"
 # setup_name: This string is contained in all output files generated
 #  -- type:string
 setup_name = "2trees"
@@ -38,13 +38,13 @@ postfix_vtu_files = ".vtu"
 # - Geometry ##
 # land_length_x,y,z: the dimensions (in m) of the simulated land domain
 # -- type:float
-land_length_x, land_length_y, land_length_z = 12, 6, 5
+land_length_x, land_length_y, land_length_z = 12, 6, 4
 # land_origin_x,y: the coordinates of the upper-left-bottom corner of the land
 # mesh. The z_coordinate of the upper_left_bottom corner is always set to
 # z = -land_length_z -- type:float
 land_origin_x, land_origin_y = 0, 0
 # land_layers_x,y,z: the number of layers in each dimension. -- type:int
-land_layers_x, land_layers_y, land_layers_z = 24, 12, 10
+land_layers_x, land_layers_y, land_layers_z = 48, 24, 6
 
 # - Names for primary variables in subsurface processes ##
 # pressure_variable_name, concentration_variable_name: Names of the primary
