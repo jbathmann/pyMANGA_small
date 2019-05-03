@@ -4,6 +4,7 @@ from pybettina import Land
 from pybettina import Flora
 import SALT
 import os
+import numpy as np
 
 class Run:
     """
@@ -83,7 +84,7 @@ class Run:
                  ogs_outputrepeats,
                  kappa="1.239e-11 0 0 0 1.239e-11 0 0 0 1.239e-11"):
         os.system("mkdir -p " + working_directory)
-        print(working_directory)
+        np.random.seed(0)
         # land domain creation
         land = Land.Land(setup_name + land_name, working_directory)
         land.create3DDelaunayLand(setup_name + land_name, land_origin_x,
