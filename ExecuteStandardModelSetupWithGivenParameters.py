@@ -80,7 +80,8 @@ class Run:
                  tree_species, initial_plants, flora_plant_function,
                  bettina_delta_t, number_of_bettina_timesteps,
                  ogs_fixed_output_times, ogs_outputdeltaN,
-                 ogs_outputrepeats, kappa):
+                 ogs_outputrepeats,
+                 kappa="1.239e-11 0 0 0 1.239e-11 0 0 0 1.239e-11"):
         os.system("mkdir -p " + working_directory)
         print(working_directory)
         # land domain creation
