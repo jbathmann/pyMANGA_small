@@ -162,7 +162,7 @@ def main(argv):
     else:
         def flora_plant_function(flora, land):
             from pybettina import Tree
-            new_tree = Tree.Tree(3., 5., flora.land, "Avicennia", 0,
+            new_tree = Tree.Tree(5., 5., flora.land, "Avicennia", 0,
                                  flora.flora_name)
             new_tree.plantTree(flora.working_directory)
             flora.trees.append(new_tree)
