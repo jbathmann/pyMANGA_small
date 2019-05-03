@@ -3,7 +3,7 @@
 from pybettina import Land
 from pybettina import Flora
 import SALT
-
+import os
 
 class Run:
     """
@@ -80,7 +80,9 @@ class Run:
                  tree_species, initial_plants, flora_plant_function,
                  bettina_delta_t, number_of_bettina_timesteps,
                  ogs_fixed_output_times, ogs_outputdeltaN,
-                 ogs_outputrepeats):
+                 ogs_outputrepeats, kappa):
+        os.system("mkdir -p " + working_directory)
+        print(working_directory)
         # land domain creation
         land = Land.Land(setup_name + land_name, working_directory)
         land.create3DDelaunayLand(setup_name + land_name, land_origin_x,
@@ -122,7 +124,7 @@ class Run:
         model.createBoundarySurface("top")
         # storing of boundary conditions in the model
         model.updateBoundaryConditions()
-
+        model.ogsPrj.project.parameter_values[-1] = kappa
         # pvd_file-output definitions
         model.createMeshCollection(output_midstring, postfix_vtu_files)
         model.createTreeCollection(tree_species, postfix_vtu_files)
