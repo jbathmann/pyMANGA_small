@@ -33,7 +33,6 @@ def main(argv):
     d = 5
 
     second_tree = False
-
     kappa = "1.239e-11 0 0 0 1.239e-11 0 0 0 1.239e-11"
 
     try:
@@ -81,7 +80,7 @@ def main(argv):
     print('kappa is ', kappa)
     print('tree distance is ', d)
     print('using two trees is ', second_tree)
-
+    kappa_value = float(kappa.split(" ")[0])
     # output_midstring: specific name, which is contained on all output files
     # for the meshes associated with the ogs output -- type:string
     output_midstring = "_ogsOutput"
@@ -122,7 +121,8 @@ def main(argv):
     # distributions -- type:python function declarations
 
     def ini_darcy_function(point, dp_dx=dp_dx):
-        return -1000*(1+.701*.035)*9.81*dp_dx*1.239*1e-5
+        return -1000**2*(1+
+                      .701* ini_concentration_function(point))**2*9.81*dp_dx*kappa_value*1e3
 
     def ini_pressure_function(point, dp_dx=dp_dx):
         return - (1000 * (1 + .701 * ini_concentration_function(point))
