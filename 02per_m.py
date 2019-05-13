@@ -44,7 +44,7 @@ land_length_x, land_length_y, land_length_z = 12, 6, 4
 # z = -land_length_z -- type:float
 land_origin_x, land_origin_y = 0, 0
 # land_layers_x,y,z: the number of layers in each dimension. -- type:int
-land_layers_x, land_layers_y, land_layers_z = 48, 24, 6
+land_layers_x, land_layers_y, land_layers_z = 30, 15, 10
 
 # - Names for primary variables in subsurface processes ##
 # pressure_variable_name, concentration_variable_name: Names of the primary
@@ -72,11 +72,13 @@ def ini_darcy_function(point, dp_dx=dp_dx):
 
 
 def ini_pressure_function(point, dp_dx=dp_dx):
-    return -1000*(1+.701*.035)*9.81*(point[2]+dp_dx*point[0])
+    return - (1000 * (1 + .701 * ini_concentration_function(point))
+              * 9.81 * (point[2] + dp_dx*point[0]))
 
 
 def ini_concentration_function(point):
-    return 0.035
+    return 0.035 * (1+.01*(+point[0])/land_length_x - .01*(land_length_z * .5
+                    + point[2])/land_length_z)
 
 
 # ## Parameters on flora properties ###
@@ -110,7 +112,7 @@ def flora_plant_function(flora, land):
 # ## Parameters on time loop ###
 # bettina_timesteps: length of one timestep in bettina in [s]. Note: half a
 # year corresponds to 15778800.0 seconds -- type:double
-bettina_delta_t = 15778800.0/(6.*12)
+bettina_delta_t = 15778800.0/(6.)
 # number_of_bettina_timesteps: total number of iterations of the bettina model
 # -- type:int
 number_of_bettina_timesteps = 50 * 12
