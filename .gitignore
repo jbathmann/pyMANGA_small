@@ -118,3 +118,7 @@ land_meshes.pvd
 testcases
 documentation/html
 documentation/latex
+debugp.pos
+debugr.pos
+wrongmesh.pos
+wrongparam.pos

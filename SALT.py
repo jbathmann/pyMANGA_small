@@ -79,7 +79,6 @@ class SaltSetup:
         land_mesh = self.land.initial_mesh
         land_grid = land_mesh.grid
         origin = [land_mesh.ox, land_mesh.oy, land_mesh.oz]
-        deltas = [land_mesh.dx, land_mesh.dy, land_mesh.dz]
         steps = [land_mesh.extension_points_X, land_mesh.extension_points_Y,
                  land_mesh.extension_points_Z]
         shift = 0
@@ -87,21 +86,20 @@ class SaltSetup:
             steps[0] = 1
             shift = 1
         if location == "right":
-            origin[0] = origin[0] + land_mesh.lengthX
+            origin[0] = origin[0] + land_mesh.length_x
         if location == "front" or location == "back":
             steps[1] = 1
             shift = 2
         if location == "back":
-            origin[1] = origin[1] + land_mesh.lengthY
+            origin[1] = origin[1] + land_mesh.length_y
         if location == "bottom" or location == "top":
             steps[2] = 1
         if location == "top":
-            origin[2] = origin[2] + land_mesh.lengthZ
+            origin[2] = origin[2] + land_mesh.length_z
         boundary_mesh_name = land_mesh.meshName + "_" + location + "Boundary"
         boundary_creator = MeshPointFinder.MeshPointFinder(land_grid)
         points, ids = boundary_creator.findPointsOnPlane(steps[0], steps[1],
-                                                         steps[2], deltas[0],
-                                                         deltas[1], deltas[2],
+                                                         steps[2],
                                                          origin[0], origin[1],
                                                          origin[2])
         temppoints = []
@@ -133,14 +131,14 @@ class SaltSetup:
             boundary_c_ini[i] = full_c_ini.GetTuple(iD)[0]
             boundary_p_ini[i] = full_p_ini.GetTuple(iD)[0]
             boundary_q_ini[i] = full_q_ini.GetTuple(iD)[0]
-        boundary.AddPropertyVector(np.array(boundary_c_ini), self.c_ini_name,
+        boundary.addPropertyVector(np.array(boundary_c_ini), self.c_ini_name,
                                    "double")
-        boundary.AddPropertyVector(np.array(boundary_p_ini), self.p_ini_name,
+        boundary.addPropertyVector(np.array(boundary_p_ini), self.p_ini_name,
                                    "double")
-        boundary.AddPropertyVector(np.array(boundary_q_ini), self.q_ini_name,
+        boundary.addPropertyVector(np.array(boundary_q_ini), self.q_ini_name,
                                    "double")
-        boundary.AddPropertyVector(1, "one", "double")
-        boundary.OutputMesh(self.working_directory)
+        boundary.addPropertyVector(1, "one", "double")
+        boundary.outputMesh(self.working_directory)
         self.boundary_surfaces.append(boundary_mesh_name)
 
     def updateFloraBoundaryConditions(self):

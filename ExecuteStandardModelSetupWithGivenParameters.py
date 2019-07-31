@@ -87,8 +87,8 @@ class Run:
         np.random.seed(0)
         # land domain creation
         land = Land.Land(setup_name + land_name, working_directory)
-        land.create3DDelaunayLand(setup_name + land_name, land_origin_x,
-                                     land_origin_y, -land_length_z,
+        land.createLand(setup_name + land_name, land_origin_x,
+                                     land_origin_y,
                                      land_length_x, land_length_y,
                                      land_length_z, land_layers_x + 1,
                                      land_layers_y + 1, land_layers_z + 1)
@@ -102,16 +102,16 @@ class Run:
                 pressure_function=ini_pressure_function,
                 concentration_function=ini_concentration_function)
 
-        land.setSurfacePointLocations()
-        land.outputLand()
+        #land.setSurfacePointLocations()
+        land.updateLand()
         # flora creation
         flora = Flora.Flora(setup_name + flora_name, land, working_directory)
         # initial plant distribution
         flora_plant_function(flora, land)
-
+        flora.updateAllMeshes(0)
         # salt model setup
         model = SALT.SaltSetup(setup_name, working_directory, land, flora,
-                               False, output_midstring)
+                               True, output_midstring)
         # variable name definition
         model.setVariableNames(pressure_variable_name,
                                concentration_variable_name)
