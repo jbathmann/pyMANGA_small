@@ -182,7 +182,9 @@ class SaltSetup:
 
     def updateModel(self):
         self.ogsPrj.setLandName(self.land.initial_mesh_name)
+        kappa_t_old = self.ogsPrj.project.parameter_values[-1]
         self.ogsPrj.initializeProject(self.constant_density)
+        self.ogsPrj.project.parameter_values[-1] = kappa_t_old
         self.ogsPrj.project.output_prefix = self.setup_name + \
             self.output_midstring
 
