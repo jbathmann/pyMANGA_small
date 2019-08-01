@@ -81,7 +81,7 @@ class Run:
                  tree_species, initial_plants, flora_plant_function,
                  bettina_delta_t, number_of_bettina_timesteps,
                  ogs_fixed_output_times, ogs_outputdeltaN,
-                 ogs_outputrepeats,
+                 ogs_outputrepeats, z,
                  kappa="1.239e-11 0 0 0 1.239e-11 0 0 0 1.239e-11"):
         os.system("mkdir -p " + working_directory)
         np.random.seed(0)
@@ -91,7 +91,16 @@ class Run:
                                      land_origin_y,
                                      land_length_x, land_length_y,
                                      land_length_z, land_layers_x + 1,
-                                     land_layers_y + 1, land_layers_z + 1)
+                                     land_layers_y + 1, land_layers_z + 1, z=z)
+
+
+        #land.setSurfacePointLocations()
+        land.updateLand()
+        # flora creation
+        flora = Flora.Flora(setup_name + flora_name, land, working_directory)
+        # initial plant distribution
+        flora_plant_function(flora, land)
+
         # initial conditions for land domain
         land.setCIniPIniAndNodeIds(
                 c_name=concentration_initial_name,
@@ -100,14 +109,7 @@ class Run:
                 node_id_name=node_id_name,
                 darcy_velocity_function=ini_darcy_function,
                 pressure_function=ini_pressure_function,
-                concentration_function=ini_concentration_function)
-
-        #land.setSurfacePointLocations()
-        land.updateLand()
-        # flora creation
-        flora = Flora.Flora(setup_name + flora_name, land, working_directory)
-        # initial plant distribution
-        flora_plant_function(flora, land)
+                concentration_function=ini_concentration_function, flora=flora)
         flora.updateAllMeshes(0)
         # salt model setup
         model = SALT.SaltSetup(setup_name, working_directory, land, flora,
