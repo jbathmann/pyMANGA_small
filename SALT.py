@@ -5,6 +5,7 @@ import numpy as np
 from pymeshinteraction import *
 from pybettina import *
 import OGSProject
+import os
 
 class SaltSetup:
 
@@ -97,7 +98,7 @@ class SaltSetup:
         if location == "top":
             origin[2] = origin[2] + land_mesh.length_z
         boundary_mesh_name = land_mesh.meshName + "_" + location + "Boundary"
-        boundary_creator = MeshPointFinder.MeshPointFinder(land_grid)
+        boundary_creator = MeshPointFinder.MeshPointFinder(land_grid, land_mesh.z)
         points, ids = boundary_creator.findPointsOnPlane(steps[0], steps[1],
                                                          steps[2],
                                                          origin[0], origin[1],
@@ -111,33 +112,47 @@ class SaltSetup:
             point = point[x], point[y], point[z]
             temppoints.append(point)
         boundary = MeshInteractor.MeshInteractor(boundary_mesh_name)
-        boundary.CreateMeshFromPoints([points, ids])
-        temp_boundary = MeshInteractor.MeshInteractor(boundary_mesh_name)
-        temp_boundary.CreateMeshFromPoints([temppoints, ids])
-        temp_boundary.CreateMultipleTriangles()
-        cells = temp_boundary.grid.GetCells()
-        if(land_grid.GetBounds()[-1] - land_grid.GetBounds()[-2] == 0):
-            boundary.grid.SetCells(3, cells)
+        if location == "top":
+            os.system(
+                "ExtractSurface -x 0 -y 0 -z -1 -o " + self.working_directory + boundary_mesh_name + ".vtu -i " + self.working_directory + self.land.initial_mesh_name +
+                ".vtu")
+
+            cell_data = boundary.readMesh(self.working_directory, boundary_mesh_name)
+            boundary.setTempMeshAsMainMesh()
+            boundary.readMesh(self.working_directory, self.land.initial_mesh_name)
+            boundary.resampleDataset()
+            boundary.grid.GetCellData().AddArray(cell_data.GetArray("bulk_element_ids"))
+            boundary.grid.GetCellData().AddArray(cell_data.GetArray("bulk_face_ids"))
+            boundary.outputMesh(self.working_directory)
         else:
-            boundary.grid.SetCells(5, cells)
-        full_c_ini = land_grid.GetPointData().GetArray(self.c_ini_name)
-        full_p_ini = land_grid.GetPointData().GetArray(self.p_ini_name)
-        full_q_ini = land_grid.GetPointData().GetArray(self.q_ini_name)
-        boundary_c_ini = np.zeros(len(ids))
-        boundary_p_ini = np.zeros(len(ids))
-        boundary_q_ini = np.zeros(len(ids))
-        for i in range(len(ids)):
-            iD = ids[i]
-            boundary_c_ini[i] = full_c_ini.GetTuple(iD)[0]
-            boundary_p_ini[i] = full_p_ini.GetTuple(iD)[0]
-            boundary_q_ini[i] = full_q_ini.GetTuple(iD)[0]
-        boundary.addPropertyVector(np.array(boundary_c_ini), self.c_ini_name,
-                                   "double")
-        boundary.addPropertyVector(np.array(boundary_p_ini), self.p_ini_name,
-                                   "double")
-        boundary.addPropertyVector(np.array(boundary_q_ini), self.q_ini_name,
-                                   "double")
+            boundary.CreateMeshFromPoints([points, ids])
+            temp_boundary = MeshInteractor.MeshInteractor(boundary_mesh_name)
+            temp_boundary.CreateMeshFromPoints([temppoints, ids])
+            temp_boundary.CreateMultipleTriangles()
+            cells = temp_boundary.grid.GetCells()
+            if(land_grid.GetBounds()[-1] - land_grid.GetBounds()[-2] == 0):
+                boundary.grid.SetCells(3, cells)
+            else:
+                boundary.grid.SetCells(5, cells)
+            full_c_ini = land_grid.GetPointData().GetArray(self.c_ini_name)
+            full_p_ini = land_grid.GetPointData().GetArray(self.p_ini_name)
+            full_q_ini = land_grid.GetPointData().GetArray(self.q_ini_name)
+            boundary_c_ini = np.zeros(len(ids))
+            boundary_p_ini = np.zeros(len(ids))
+            boundary_q_ini = np.zeros(len(ids))
+            for i in range(len(ids)):
+                iD = ids[i]
+                boundary_c_ini[i] = full_c_ini.GetTuple(iD)[0]
+                boundary_p_ini[i] = full_p_ini.GetTuple(iD)[0]
+                boundary_q_ini[i] = full_q_ini.GetTuple(iD)[0]
+            boundary.addPropertyVector(np.array(boundary_c_ini), self.c_ini_name,
+                                       "double")
+            boundary.addPropertyVector(np.array(boundary_p_ini), self.p_ini_name,
+                                       "double")
+            boundary.addPropertyVector(np.array(boundary_q_ini), self.q_ini_name,
+                                       "double")
         boundary.addPropertyVector(1, "one", "double")
+
         boundary.outputMesh(self.working_directory)
         self.boundary_surfaces.append(boundary_mesh_name)
 
