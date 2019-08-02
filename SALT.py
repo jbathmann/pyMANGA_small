@@ -165,6 +165,9 @@ class SaltSetup:
 
     def updateBoundaryConditions(self):
         self.ogsPrj.resetBoundaryConditions()
+        self.boundary_surfaces = []
+        self.createBoundarySurface("left")
+        self.createBoundarySurface("right")
         self.addBoundaryConditionForSurfaces("pressure")
         self.addBoundaryConditionForSurfaces("concentration")
         self.updateFloraBoundaryConditions()

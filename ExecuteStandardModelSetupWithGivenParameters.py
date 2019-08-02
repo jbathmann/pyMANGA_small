@@ -123,11 +123,8 @@ class Run:
                                       darcy_velocity_initial_name)
         # creation of boundary surfaces at given faces ("left", "right", "top",
         # "bottom", "front", "back") of land domain box
-        model.createBoundarySurface("left")
-        model.createBoundarySurface("right")
-        model.createBoundarySurface("top")
+
         # storing of boundary conditions in the model
-        model.updateBoundaryConditions()
         model.ogsPrj.project.parameter_values[-1] = kappa
         # pvd_file-output definitions
         model.createMeshCollection(output_midstring, postfix_vtu_files)
