@@ -10,7 +10,8 @@ land domain.
 import ExecuteStandardModelSetupWithGivenParameters
 # ExecuteStandardModelSetupWithGivenParameters.Run(args) starts the salt model
 # with the configuration given below
-import sys, getopt
+import sys
+import getopt
 
 
 def main(argv):
@@ -92,19 +93,23 @@ def main(argv):
     # - Geometry ##
     # land_length_x,y,z: the dimensions (in m) of the simulated land domain
     # -- type:float
-    land_length_x, land_length_y, land_length_z = 9, 6, 1.5
+    land_length_x, land_length_y, land_length_z = 12, 8, 1.5
     # land_origin_x,y: the coordinates of the upper-left-bottom corner of the
     # land mesh. The z_coordinate of the upper_left_bottom corner is always set
     # to z = -land_length_z -- type:float
     land_origin_x, land_origin_y = 0, 0
     # land_layers_x,y,z: the number of layers in each dimension. -- type:int
-    land_layers_x, land_layers_y, land_layers_z = 23, 15, 6
+    land_layers_x, land_layers_y, land_layers_z = 12, 8, 2
+    if second_tree:
+        land_length_x += d
+        land_layers_x = round(land_length_x)
 
+    tree_resolution = [1/7.]
     # - Names for primary variables in subsurface processes ##
     # pressure_variable_name, concentration_variable_name: Names of the primary
     # variables themselves -- type:string
-    pressure_variable_name, concentration_variable_name = \
-                                                    "pressure", "concentration"
+    pressure_variable_name, concentration_variable_name = ("pressure",
+                                                           "concentration")
     # pressure_initial_name, concentration_initial_name: names for the initial
     # conditions for the primary variables -- type:string
     pressure_initial_name, concentration_initial_name = "p_ini", "c_ini"
@@ -121,17 +126,17 @@ def main(argv):
     # distributions -- type:python function declarations
 
     def ini_darcy_function(point, dp_dx=dp_dx):
-        return -1000**2*(1+
-                      .701* ini_concentration_function(point))**2*9.81*dp_dx*kappa_value*1e3
+        return -1000**2*9.81*dp_dx*kappa_value*1e3
 
     def ini_pressure_function(point, dp_dx=dp_dx):
-        return - (1000 * (1 + .701 * ini_concentration_function(point))
-                  * 9.81 * (point[2] + dp_dx*point[0]))
+        return - (1000 *
+                  9.81 * (point[2] + dp_dx*point[0]))
 
     def ini_concentration_function(point):
-        return 0.035 * (1 - .01*(land_length_z * .5
-                        + point[2])/land_length_z)
+        return 0.035
 
+    def z(x, y, dp_dx=dp_dx):
+        return -dp_dx * x
     # ## Parameters on flora properties ###
 
     # tree species: list containing the species which considered in the initial
@@ -141,7 +146,7 @@ def main(argv):
     # initial_plants: number of individums planted for each species for the
     # initial plant distributions. Given in the form
     # [n_species1, n_species2, ...], with n_speciesi being the number of
-    #individuums of each species
+    # individuums of each species
     # -- type:list of ints
     initial_plants = [150]
     # flora_plant_function: function defining how the initial plant
@@ -150,26 +155,26 @@ def main(argv):
     if second_tree:
         def flora_plant_function(flora, land):
             from pybettina import Tree
-            new_tree = Tree.Tree(2.5, 3., flora.land, "Avicennia", 0,
+            new_tree = Tree.Tree(4., 4., flora.land, "Avicennia", 0,
                                  flora.flora_name)
-            new_tree.plantTree(flora.working_directory)
+            new_tree.plantTree(flora.working_directory, tree_resolution)
             flora.trees.append(new_tree)
-            second_tree = Tree.Tree(2.5+d, 3, flora.land, "Avicennia", 1,
+            second_tree = Tree.Tree(4. + d, 4., flora.land, "Avicennia", 1,
                                     flora.flora_name)
-            second_tree.plantTree(flora.working_directory)
+            second_tree.plantTree(flora.working_directory, tree_resolution)
             flora.trees.append(second_tree)
     else:
         def flora_plant_function(flora, land):
             from pybettina import Tree
-            new_tree = Tree.Tree(3., 3., flora.land, "Avicennia", 0,
+            new_tree = Tree.Tree(4., 4., flora.land, "Avicennia", 0,
                                  flora.flora_name)
-            new_tree.plantTree(flora.working_directory)
+            new_tree.plantTree(flora.working_directory, tree_resolution)
             flora.trees.append(new_tree)
 
     # ## Parameters on time loop ###
     # bettina_timesteps: length of one timestep in bettina in [s]. Note: half a
     # year corresponds to 15778800.0 seconds -- type:double
-    bettina_delta_t = 15778800.0/(6.)
+    bettina_delta_t = int(15778800.0/(6.))
     # number_of_bettina_timesteps: total number of iterations of the bettina
     # model -- type:int
     number_of_bettina_timesteps = 50 * 12
@@ -181,7 +186,7 @@ def main(argv):
                               60 * 60 * 24 * 25, 60 * 60 * 24 * 30]
     # ogs_outputdeltaN: list containing number of steps for after which ogs is
     # writing an output file -- type:list of ints
-    ogs_outputdeltaN = [500]
+    ogs_outputdeltaN = [5000]
     # ogs_outputrepeats: list of same shape as ogs_outputdeltaN containing the
     # number of iterations with the different output intervals given in
     # ogs_outputdeltaN -- type:list of ints
@@ -201,7 +206,7 @@ def main(argv):
             tree_species, initial_plants, flora_plant_function,
             bettina_delta_t, number_of_bettina_timesteps,
             ogs_fixed_output_times, ogs_outputdeltaN,
-            ogs_outputrepeats, kappa)
+            ogs_outputrepeats, z, kappa)
 
 
 if __name__ == "__main__":
