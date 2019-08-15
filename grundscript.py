@@ -93,18 +93,18 @@ def main(argv):
     # - Geometry ##
     # land_length_x,y,z: the dimensions (in m) of the simulated land domain
     # -- type:float
-    land_length_x, land_length_y, land_length_z = 12, 8, 1.5
+    land_length_x, land_length_y, land_length_z = 20, 10, 1.5
     # land_origin_x,y: the coordinates of the upper-left-bottom corner of the
     # land mesh. The z_coordinate of the upper_left_bottom corner is always set
     # to z = -land_length_z -- type:float
     land_origin_x, land_origin_y = 0, 0
     # land_layers_x,y,z: the number of layers in each dimension. -- type:int
-    land_layers_x, land_layers_y, land_layers_z = 12, 8, 2
+    land_layers_x, land_layers_y, land_layers_z = 20, 10, 2
     if second_tree:
         land_length_x += d
         land_layers_x = round(land_length_x)
 
-    tree_resolution = [1/7.]
+    tree_resolution = [1/3.]
     # - Names for primary variables in subsurface processes ##
     # pressure_variable_name, concentration_variable_name: Names of the primary
     # variables themselves -- type:string
@@ -155,18 +155,18 @@ def main(argv):
     if second_tree:
         def flora_plant_function(flora, land):
             from pybettina import Tree
-            new_tree = Tree.Tree(4., 4., flora.land, "Avicennia", 0,
+            new_tree = Tree.Tree(5., 5., flora.land, "Avicennia", 0,
                                  flora.flora_name)
             new_tree.plantTree(flora.working_directory, tree_resolution)
             flora.trees.append(new_tree)
-            second_tree = Tree.Tree(4. + d, 4., flora.land, "Avicennia", 1,
+            second_tree = Tree.Tree(5. + d, 5., flora.land, "Avicennia", 1,
                                     flora.flora_name)
             second_tree.plantTree(flora.working_directory, tree_resolution)
             flora.trees.append(second_tree)
     else:
         def flora_plant_function(flora, land):
             from pybettina import Tree
-            new_tree = Tree.Tree(4., 4., flora.land, "Avicennia", 0,
+            new_tree = Tree.Tree(5., 5., flora.land, "Avicennia", 0,
                                  flora.flora_name)
             new_tree.plantTree(flora.working_directory, tree_resolution)
             flora.trees.append(new_tree)

@@ -100,7 +100,7 @@ class Run:
         flora = Flora.Flora(setup_name + flora_name, land, working_directory)
         # initial plant distribution
         flora_plant_function(flora, land)
-
+        flora.updateAllMeshes(0)
         # initial conditions for land domain
         land.setCIniPIniAndNodeIds(
                 c_name=concentration_initial_name,
