@@ -78,8 +78,8 @@ class OGSProject:
             if "right" in mesh:
                 if variable == self.p_var_name:
                     self.project.createBoundaryCondition(
-                            "p", "Neumann",
-                            mesh, self.q_ini_name)
+                            "p", "Dirichlet",
+                            mesh, self.p_ini_name)
                 if variable == self.c_var_name:
                     self.project.createBoundaryCondition(
                             "c", "Dirichlet",
@@ -91,8 +91,8 @@ class OGSProject:
                             mesh, self.c_ini_name)
                 if variable == self.p_var_name:
                     self.project.createBoundaryCondition(
-                            "p", "Dirichlet",
-                            mesh, self.p_ini_name)
+                            "p", "Neumann",
+                            mesh, self.q_ini_name)
 
     def createTreeBoundaryConditionsFromList(
             self, mesh_list, variable, tYpe, constant, coeff1, coeff2, coeff3):
