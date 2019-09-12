@@ -99,7 +99,7 @@ def main(argv):
     # to z = -land_length_z -- type:float
     land_origin_x, land_origin_y = 0, 0
     # land_layers_x,y,z: the number of layers in each dimension. -- type:int
-    land_layers_x, land_layers_y, land_layers_z = 20, 10, 2
+    land_layers_x, land_layers_y, land_layers_z = 30, 15, 4
     if second_tree:
         land_length_x += d
         land_layers_x = round(land_length_x)
@@ -130,7 +130,7 @@ def main(argv):
 
     def ini_pressure_function(point, dp_dx=dp_dx):
         return - (1000 *
-                  9.81 * (point[2] + dp_dx*point[0]))
+                  9.81 * (point[2]))
 
     def ini_concentration_function(point):
         return 0.035
