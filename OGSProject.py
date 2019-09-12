@@ -59,12 +59,13 @@ class OGSProject:
         self.project = pyOgsProject.GenerateProject(self.project_dir +
                                                     self.project_name + ".prj")
         self.project.setMesh(self.land_name+".vtu")
-        self.project.setStandardProcessInformation()
-        self.project.setStandartAdaptiveTimeLoop()
-        self.project.setStandartParameters()
         self.project.setStandardDensityModel()
         if constant_density:
             self.project.densityModel = "Constant"
+        self.project.setStandardProcessInformation()
+        self.project.setStandartAdaptiveTimeLoop()
+        self.project.setStandartParameters()
+
         self.project.setStandardNonlinearSolvers()
         self.project.resetInitialConditions(self.p_ini_name, self.c_ini_name)
         self.project.processspeci_bo_force = "0 0 -"+str(self.g)
