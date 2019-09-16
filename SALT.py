@@ -112,9 +112,21 @@ class SaltSetup:
             point = point[x], point[y], point[z]
             temppoints.append(point)
         boundary = MeshInteractor.MeshInteractor(boundary_mesh_name)
-        if location == "top":
+        if location == "right":
             os.system(
-                "ExtractSurface -x 0 -y 0 -z -1 -o " + self.working_directory + boundary_mesh_name + ".vtu -i " + self.working_directory + self.land.initial_mesh_name +
+                "ExtractSurface -x -1 -y 0 -z 0 -a 0 -o " + self.working_directory + boundary_mesh_name + ".vtu -i " + self.working_directory + self.land.initial_mesh_name +
+                ".vtu")
+
+            cell_data = boundary.readMesh(self.working_directory, boundary_mesh_name)
+            boundary.setTempMeshAsMainMesh()
+            boundary.readMesh(self.working_directory, self.land.initial_mesh_name)
+            boundary.resampleDataset()
+            boundary.grid.GetCellData().AddArray(cell_data.GetArray("bulk_element_ids"))
+            boundary.grid.GetCellData().AddArray(cell_data.GetArray("bulk_face_ids"))
+            boundary.outputMesh(self.working_directory)
+        elif location == "top":
+            os.system(
+                "ExtractSurface -x -1 -y 0 -z 0 -a 30 -o " + self.working_directory + boundary_mesh_name + ".vtu -i " + self.working_directory + self.land.initial_mesh_name +
                 ".vtu")
 
             cell_data = boundary.readMesh(self.working_directory, boundary_mesh_name)
