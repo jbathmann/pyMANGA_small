@@ -126,11 +126,11 @@ def main(argv):
     # distributions -- type:python function declarations
 
     def ini_darcy_function(point, dp_dx=dp_dx):
-        return 1000**2*9.81*dp_dx*kappa_value*1e3
+        return 1000**2* (1 + 0.0 * 0.701)**2*9.81*dp_dx*kappa_value*1e3
 
     def ini_pressure_function(point, dp_dx=dp_dx):
-        return - (1000 *
-                  9.81 * (point[2]))
+        return - (1000 * (1 + 0.0 * 0.701) *
+                  9.81 * (point[2] + dp_dx * point[0]))
 
     def ini_concentration_function(point):
         return 0.035
