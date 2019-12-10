@@ -32,7 +32,7 @@ def main(argv):
     dp_dx = 1e-3
 
     d = 5
-
+    initial_salinity = 0.035
     second_tree = False
     kappa = "1.239e-11 0 0 0 1.239e-11 0 0 0 1.239e-11"
 
@@ -40,7 +40,8 @@ def main(argv):
         opts, args = getopt.getopt(argv, "hd:s:l:f:v:k:",
                                    ["wdir=", "setup_name=", "land_name=",
                                     "flora_name=", "dp_dx=", "kappa=",
-                                    "tree_distance=", "second_tree="])
+                                    "tree_distance=", "second_tree=",
+                                    "initial_salinity="])
     except getopt.GetoptError:
         print("""grundscript.py wrong usage. Type "python grundscript.py -h"
   for additional help.""")
@@ -55,7 +56,8 @@ def main(argv):
   -v,--dp_dx <horizontal_pressure_gradient>
   -k, -kappa <kappa tensor>
      --tree_distance <tree_distance>
-     --second_tree <second_tree>""")
+     --second_tree <second_tree>
+     --initial_salinity <initial_salinity>""")
             sys.exit()
         elif opt in ("-d", "--wdir"):
             working_directory = str(arg)
@@ -73,6 +75,8 @@ def main(argv):
             d = float(arg)
         elif opt in ("--second_tree"):
             second_tree = bool(arg)
+        elif opt in ("--initial_salinity"):
+            initial_salinity = float(arg)
     print('Working directory is ', working_directory)
     print('Setup name is ', setup_name)
     print('Land name is ', land_name)
@@ -133,7 +137,7 @@ def main(argv):
                   9.81 * (point[2] + dp_dx * point[0]))
 
     def ini_concentration_function(point):
-        return 0.035
+        return initial_salinity
 
     def z(x, y, dp_dx=dp_dx):
         return -dp_dx * x
