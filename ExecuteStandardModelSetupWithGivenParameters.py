@@ -2,7 +2,7 @@
 #  -*- coding: utf-8 -*-
 from pybettina import Land
 from pybettina import Flora
-import SALT
+import MANGA
 import os
 import numpy as np
 
@@ -111,8 +111,8 @@ class Run:
                 pressure_function=ini_pressure_function,
                 concentration_function=ini_concentration_function, flora=flora)
         flora.updateAllMeshes(0)
-        # salt model setup
-        model = SALT.SaltSetup(setup_name, working_directory, land, flora,
+        # manga model setup
+        model = MANGA.MangaSetup(setup_name, working_directory, land, flora,
                                True, output_midstring)
         # variable name definition
         model.setVariableNames(pressure_variable_name,

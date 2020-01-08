@@ -8,7 +8,7 @@ land domain and evolves it in time.
 """
 
 import ExecuteStandardModelSetupWithGivenParameters
-# ExecuteStandardModelSetupWithGivenParameters.Run(args) starts the salt model
+# ExecuteStandardModelSetupWithGivenParameters.Run(args) starts the manga model
 
 # -- Parameters on local working directories and setup naming ###
 
@@ -120,7 +120,7 @@ ogs_outputdeltaN = [10000]
 ogs_outputrepeats = [100]
 
 
-# -- Salt model execution file import and run ###
+# -- Manga model execution file import and run ###
 # with the configuration given above
 ExecuteStandardModelSetupWithGivenParameters.Run(
         working_directory, setup_name,

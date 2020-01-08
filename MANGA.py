@@ -7,9 +7,9 @@ from pybettina import *
 import OGSProject
 import os
 
-class SaltSetup:
+class MangaSetup:
 
-    ## Class managing the whole salt seltup. This class is containing 3
+    ## Class managing the whole manga seltup. This class is containing 3
     #  important objects: land, flora and the ogs-project information. The
     #  built-in functions are designed to manage information transfer between
     #  bettina and ogs model simulations.

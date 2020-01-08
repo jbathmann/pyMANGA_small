@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Example script. This file passes parameters to the salt model, such that 2
+Example script. This file passes parameters to the manga model, such that 2
 trees with one of them downstream to the other are located on a 3 dimensional
 land domain.
 @date: 2018-Today
 @author: jasper.bathmann@ufz.de
 """
 import ExecuteStandardModelSetupWithGivenParameters
-# ExecuteStandardModelSetupWithGivenParameters.Run(args) starts the salt model
+# ExecuteStandardModelSetupWithGivenParameters.Run(args) starts the manga model
 # with the configuration given below
 import sys
 import getopt
@@ -196,7 +196,7 @@ def main(argv):
     # ogs_outputdeltaN -- type:list of ints
     ogs_outputrepeats = [1]
 
-    # -- Salt model execution file import and run ###
+    # -- Manga model execution file import and run ###
     # with the configuration given above
     ExecuteStandardModelSetupWithGivenParameters.Run(
             working_directory, setup_name,
